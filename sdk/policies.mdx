@@ -1,0 +1,67 @@
+---
+title: "Policies"
+description: "Define and manage policies for your agents"
+---
+
+Policies are deterministic rules that govern what actions your agents can perform. Unlike prompt-based constraints, policies are versioned, auditable, and guaranteed to execute consistently.
+
+## Checking Policies
+
+Before an agent performs an action, check if the policy allows it:
+
+```typescript
+const result = await limits.check({
+  agent: "support-bot",
+  action: "send_email",
+  context: {
+    recipient: "user@example.com",
+  },
+});
+
+if (result.allowed) {
+  // Action is permitted
+} else {
+  console.log("Blocked:", result.reason);
+}
+```
+
+## Policy Response
+
+The `check` method returns a policy decision:
+
+```typescript
+interface PolicyResult {
+  allowed: boolean;
+  reason?: string;
+  policyId: string;
+  policyVersion: string;
+  timestamp: string;
+}
+```
+
+## Human Approval
+
+For sensitive actions, you can require human approval:
+
+```typescript
+const result = await limits.check({
+  agent: "finance-bot",
+  action: "transfer_funds",
+  context: {
+    amount: 10000,
+    currency: "USD",
+  },
+});
+
+if (result.requiresApproval) {
+  // Wait for human approval via dashboard or Slack
+  const approved = await limits.waitForApproval(result.approvalId);
+}
+```
+
+## Next Steps
+
+<Card title="Register Agents" icon="robot" href="/sdk/agents">
+  Learn how to register and configure agents.
+</Card>
+

@@ -1,0 +1,59 @@
+---
+title: "Agents"
+description: "Register and manage your AI agents"
+---
+
+Agents are the AI systems that perform actions in your application. Each agent is registered with Limits and associated with policies that govern its behavior.
+
+## Registering an Agent
+
+```typescript
+const agent = await limits.agents.create({
+  name: "support-bot",
+  description: "Customer support automation agent",
+});
+```
+
+## Listing Agents
+
+```typescript
+const agents = await limits.agents.list();
+
+for (const agent of agents) {
+  console.log(agent.name, agent.id);
+}
+```
+
+## Agent Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `id` | `string` | Unique agent identifier |
+| `name` | `string` | Human-readable name |
+| `description` | `string` | Agent description |
+| `createdAt` | `string` | Creation timestamp |
+| `policies` | `string[]` | Associated policy IDs |
+
+## Assigning Policies
+
+Associate policies with an agent:
+
+```typescript
+await limits.agents.assignPolicy({
+  agentId: "agent_123",
+  policyId: "policy_456",
+});
+```
+
+## Checking Agent Actions
+
+When checking a policy, reference the agent by name or ID:
+
+```typescript
+const result = await limits.check({
+  agent: "support-bot", // or agent.id
+  action: "send_email",
+  context: { /* ... */ },
+});
+```
+

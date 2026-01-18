@@ -1,0 +1,58 @@
+---
+title: "Installation"
+description: "Install and configure the Limits SDK"
+---
+
+## Installation
+
+Install the Limits SDK using your preferred package manager:
+
+<CodeGroup>
+```bash npm
+npm install @limits.dev/sdk
+```
+
+```bash yarn
+yarn add @limits.dev/sdk
+```
+
+```bash pnpm
+pnpm add @limits.dev/sdk
+```
+</CodeGroup>
+
+## Configuration
+
+Initialize the client with your API key:
+
+```typescript
+import { Limits } from "@limits.dev/sdk";
+
+const limits = new Limits({
+  apiKey: process.env.LIMITS_API_KEY,
+});
+```
+
+### Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `apiKey` | `string` | Required | Your Limits API key |
+| `baseUrl` | `string` | `https://api.limits.dev` | API base URL |
+| `timeout` | `number` | `5000` | Request timeout in milliseconds |
+
+## Get Your API Key
+
+1. Sign up at [app.limits.dev](https://app.limits.dev)
+2. Navigate to **Settings → API Keys**
+3. Create a new API key
+4. Add it to your environment variables
+
+```bash
+export LIMITS_API_KEY="your-api-key"
+```
+
+<Warning>
+  Never commit your API key to version control. Use environment variables or a secrets manager.
+</Warning>
+
