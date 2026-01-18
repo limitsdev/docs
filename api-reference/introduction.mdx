@@ -1,33 +1,67 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: "API Reference"
+description: "Limits REST API documentation"
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+The Limits API allows you to programmatically manage policies, agents, and check policy decisions.
 
-## Welcome
+## Base URL
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
-
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+```
+https://api.limits.dev/v1
+```
 
 ## Authentication
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All API requests require an API key passed in the `Authorization` header:
+
+```bash
+curl https://api.limits.dev/v1/agents \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Rate Limits
+
+| Plan | Requests/month |
+|------|---------------|
+| Free | 1,000 |
+| Startup | 100,000 |
+| Enterprise | Unlimited |
+
+## Endpoints
+
+### Policy Check
+
+```bash
+POST /v1/check
+```
+
+Check if an action is allowed by policy:
+
+```bash
+curl -X POST https://api.limits.dev/v1/check \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent": "support-bot",
+    "action": "send_email",
+    "context": {
+      "recipient": "user@example.com"
+    }
+  }'
+```
+
+### Response
 
 ```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+{
+  "allowed": true,
+  "policyId": "pol_abc123",
+  "policyVersion": "1.0.0",
+  "timestamp": "2025-01-18T12:00:00Z"
+}
 ```
+
+<Card title="SDK Reference" icon="code" href="/sdk/installation">
+  For a better developer experience, use our SDK instead of raw API calls.
+</Card>
