@@ -25,7 +25,8 @@
             "pages": [
               "sdk/installation",
               "sdk/policies",
-              "sdk/agents"
+              "sdk/agents",
+              "sdk/human-approvals"
             ]
           }
         ]

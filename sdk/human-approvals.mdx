@@ -1,0 +1,138 @@
+---
+title: "Human Approvals"
+description: "Manage human approval workflows for escalated policies"
+---
+
+When a policy evaluation results in an `escalate` action, it creates a human approval request. The SDK provides methods to list, approve, and decline these approvals.
+
+## Listing Approvals
+
+Get all human approval requests for your organization:
+
+```typescript
+const approvals = await limits.listHumanApprovals();
+
+// Filter for pending approvals
+const pendingApprovals = approvals.filter(
+  approval => approval.status === 'PENDING'
+);
+
+for (const approval of pendingApprovals) {
+  console.log(`Approval ${approval.id} needs review for policy ${approval.policy_id}`);
+}
+```
+
+## Approving an Approval
+
+Approve a pending human approval request:
+
+```typescript
+const approval = await limits.approveHumanApproval('123e4567-e89b-12d3-a456-426614174000');
+
+console.log(`Approval ${approval.id} has been approved`);
+console.log(`Status: ${approval.status}`);
+if (approval.action_by_user) {
+  console.log(`Approved by: ${approval.action_by_user.first_name} ${approval.action_by_user.last_name}`);
+}
+```
+
+## Declining an Approval
+
+Decline a pending human approval request:
+
+```typescript
+const approval = await limits.declineHumanApproval('123e4567-e89b-12d3-a456-426614174000');
+
+console.log(`Approval ${approval.id} has been declined`);
+console.log(`Status: ${approval.status}`);
+```
+
+## Approval Status
+
+Approvals have three possible statuses:
+
+```typescript
+enum HumanApprovalStatus {
+  PENDING = 'PENDING',    // Waiting for review
+  ALLOWED = 'ALLOWED',    // Approved
+  DECLINED = 'DECLINED',  // Declined
+}
+```
+
+## Approval Object
+
+The approval object contains:
+
+```typescript
+interface HumanApproval {
+  id: string;                    // UUID of the approval
+  policy_id: string;             // Policy that triggered the escalation
+  organization_id: string;        // Organization ID
+  status: HumanApprovalStatus;    // Current status
+  request?: any;                  // Original request data
+  response?: any;                 // Original response data
+  action_by?: string;             // User ID who took action
+  action_by_user?: ActionByUser;  // User details
+  created_at: string;             // Creation timestamp
+  updated_at: string;             // Last update timestamp
+}
+```
+
+## Complete Example
+
+```typescript
+import { Limits } from "@limits/sdk";
+
+const limits = new Limits({
+  apiKey: process.env.LIMITS_API_KEY,
+});
+
+// Check a policy that might escalate
+const decision = await limits.checkConditions('sensitive-action', {
+  amount: 10000,
+  currency: 'USD',
+});
+
+if (decision.isEscalated) {
+  console.log('Action escalated, waiting for approval...');
+  
+  // List pending approvals
+  const approvals = await limits.listHumanApprovals();
+  const pending = approvals.find(a => a.status === 'PENDING');
+  
+  if (pending) {
+    // In a real application, you might wait for user input
+    // For this example, we'll approve it
+    const approved = await limits.approveHumanApproval(pending.id);
+    console.log(`Approval ${approved.id} has been approved`);
+  }
+}
+```
+
+## Error Handling
+
+The SDK validates UUID format for approval IDs:
+
+```typescript
+import { InvalidInputError } from '@limits/sdk';
+
+try {
+  await limits.approveHumanApproval('invalid-uuid');
+} catch (error) {
+  if (error instanceof InvalidInputError) {
+    console.error('Invalid approval ID format');
+  }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/sdk/policies">
+    Learn how policies can escalate to human approval.
+  </Card>
+  <Card title="Installation" icon="download" href="/sdk/installation">
+    Review SDK installation and configuration.
+  </Card>
+</CardGroup>
+

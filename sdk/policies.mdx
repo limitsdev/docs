@@ -1,67 +1,116 @@
 ---
 title: "Policies"
-description: "Define and manage policies for your agents"
+description: "Evaluate policies with structured data or interaction text"
 ---
 
-Policies are deterministic rules that govern what actions your agents can perform. Unlike prompt-based constraints, policies are versioned, auditable, and guaranteed to execute consistently.
+Policies are deterministic rules that govern what actions your agents can perform. The Limits SDK provides two methods for checking policies: `checkConditions()` for structured data and `checkInteractions()` for text-based interactions.
 
-## Checking Policies
+## Checking Conditions
 
-Before an agent performs an action, check if the policy allows it:
+Use `checkConditions()` when you have structured data to evaluate:
 
 ```typescript
-const result = await limits.check({
-  agent: "support-bot",
-  action: "send_email",
-  context: {
-    recipient: "user@example.com",
-  },
+const decision = await limits.checkConditions('amount-minimum-usd', {
+  amount: 500,
+  currency: 'USD',
+  customerId: 'cus_123',
 });
 
-if (result.allowed) {
-  // Action is permitted
-} else {
-  console.log("Blocked:", result.reason);
+if (decision.isBlocked) {
+  console.error('Policy blocked:', decision.data.reason);
+} else if (decision.isEscalated) {
+  console.warn('Policy escalated for review:', decision.data.reason);
+} else if (decision.isAllowed) {
+  console.log('Policy allowed:', decision.data.reason);
+}
+```
+
+## Checking Interactions
+
+Use `checkInteractions()` when you need to evaluate text-based responses or LLM outputs:
+
+```typescript
+const decision = await limits.checkInteractions(
+  'block-amount-under-9000',
+  "Acknowledged. I tried to submit your payment for Order ORD-938271. Payment attempt ID PAY-4b72c1 was created at 2026-01-21 19:46:02 UTC. Amount received: 300.00 USD using method: card_visa_ending_1442."
+);
+
+if (decision.isBlocked) {
+  console.error('Interaction blocked:', decision.data.reason);
 }
 ```
 
 ## Policy Response
 
-The `check` method returns a policy decision:
+Both methods return a `PolicyEvaluationResult`:
 
 ```typescript
-interface PolicyResult {
-  allowed: boolean;
-  reason?: string;
-  policyId: string;
-  policyVersion: string;
-  timestamp: string;
+interface PolicyEvaluationResult {
+  data: {
+    action: 'allow' | 'block' | 'escalate';
+    reason: string;
+  };
+  isAllowed: boolean;    // Helper: data.action === 'allow'
+  isBlocked: boolean;    // Helper: data.action === 'block'
+  isEscalated: boolean;  // Helper: data.action === 'escalate'
+  errors?: string[];     // Validation errors (if any)
 }
 ```
 
-## Human Approval
+## Handling Validation Errors
 
-For sensitive actions, you can require human approval:
+When validation fails, the response includes an `errors` array:
 
 ```typescript
-const result = await limits.check({
-  agent: "finance-bot",
-  action: "transfer_funds",
-  context: {
-    amount: 10000,
-    currency: "USD",
-  },
+const decision = await limits.checkConditions('amount-minimum-usd', {
+  amount: 500,
+  // Missing required fields
 });
 
-if (result.requiresApproval) {
-  // Wait for human approval via dashboard or Slack
-  const approved = await limits.waitForApproval(result.approvalId);
+if (decision.errors && decision.errors.length > 0) {
+  console.error('Validation errors:');
+  decision.errors.forEach((error, index) => {
+    console.error(`  ${index + 1}. ${error}`);
+  });
+}
+```
+
+## Error Handling
+
+The SDK throws specific error types for different failure scenarios:
+
+```typescript
+import {
+  Limits,
+  APIRequestError,
+  NetworkError,
+  InvalidAPIKeyError,
+  InvalidPolicyKeyError,
+  InvalidInputError,
+} from '@limits/sdk';
+
+try {
+  const decision = await limits.checkConditions('amount-minimum-usd', {
+    amount: 500,
+    currency: 'USD',
+  });
+} catch (error) {
+  if (error instanceof APIRequestError) {
+    console.error('API error:', error.message);
+    console.error('Status code:', error.statusCode);
+  } else if (error instanceof NetworkError) {
+    console.error('Network error:', error.message);
+  } else if (error instanceof InvalidPolicyKeyError) {
+    console.error('Invalid policy key');
+  } else if (error instanceof InvalidInputError) {
+    console.error('Invalid input:', error.message);
+  }
 }
 ```
 
 ## Next Steps
 
-<Card title="Register Agents" icon="robot" href="/sdk/agents">
-  Learn how to register and configure agents.
+<Card title="Human Approvals" icon="user-check" href="/sdk/human-approvals">
+  Learn how to manage human approval workflows.
 </Card>
 

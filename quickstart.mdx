@@ -7,57 +7,103 @@ description: "Get started with Limits in under 5 minutes"
 
 <CodeGroup>
 ```bash npm
-npm install @limits.dev/sdk
+npm install @limits/sdk
 ```
 
 ```bash yarn
-yarn add @limits.dev/sdk
+yarn add @limits/sdk
 ```
 
 ```bash pnpm
-pnpm add @limits.dev/sdk
+pnpm add @limits/sdk
 ```
 </CodeGroup>
 
 ## Initialize the Client
 
 ```typescript
-import { Limits } from "@limits.dev/sdk";
+import { Limits } from "@limits/sdk";
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY,
 });
 ```
 
-## Check a Policy
+## Check Conditions
 
-Before your agent performs an action, check if it's allowed:
+Check policies with structured data:
 
 ```typescript
-const result = await limits.check({
-  agent: "support-bot",
-  action: "send_email",
-  context: {
-    recipient: "user@example.com",
-    subject: "Support ticket update",
-  },
+const decision = await limits.checkConditions('amount-minimum-usd', {
+  amount: 500,
+  currency: 'USD',
+  customerId: 'cus_123',
 });
 
-if (result.allowed) {
-  // Proceed with the action
-  await sendEmail(recipient, subject, body);
+if (decision.isBlocked) {
+  console.error('Action blocked:', decision.data.reason);
+  return;
+}
+
+// Proceed with the action
+console.log('Action allowed:', decision.data.reason);
+```
+
+## Check Interactions
+
+Check policies with text-based interactions (e.g., LLM responses):
+
+```typescript
+const decision = await limits.checkInteractions(
+  'block-amount-under-9000',
+  "Acknowledged. I tried to submit your payment for Order ORD-938271..."
+);
+
+if (decision.isBlocked) {
+  console.error('Interaction blocked:', decision.data.reason);
 } else {
-  console.log("Action blocked:", result.reason);
+  // Proceed with the interaction
+}
+```
+
+## Complete Example
+
+```typescript
+import { Limits } from "@limits/sdk";
+
+const limits = new Limits({
+  apiKey: process.env.LIMITS_API_KEY,
+  debug: true, // Optional: enable debug logging
+});
+
+// Check conditions
+const decision = await limits.checkConditions('amount-minimum-usd', {
+  amount: 500,
+  currency: 'USD',
+});
+
+// Use boolean helpers for cleaner conditionals
+if (decision.isBlocked) {
+  console.error('Blocked:', decision.data.reason);
+} else if (decision.isEscalated) {
+  console.warn('Escalated:', decision.data.reason);
+} else if (decision.isAllowed) {
+  console.log('Allowed:', decision.data.reason);
+}
+
+// Check for validation errors
+if (decision.errors && decision.errors.length > 0) {
+  decision.errors.forEach(error => console.error(`  - ${error}`));
 }
 ```
 
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Define Policies" icon="shield" href="/sdk/policies">
-    Learn how to create and manage policies.
+  <Card title="Policies" icon="shield" href="/sdk/policies">
+    Learn how to check policies with structured data or text.
   </Card>
-  <Card title="Register Agents" icon="robot" href="/sdk/agents">
-    Configure your agents with Limits.
+  <Card title="Human Approvals" icon="user-check" href="/sdk/human-approvals">
+    Manage human approval workflows.
   </Card>
 </CardGroup>

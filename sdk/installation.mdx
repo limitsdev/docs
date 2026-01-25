@@ -9,24 +9,28 @@ Install the Limits SDK using your preferred package manager:
 
 <CodeGroup>
 ```bash npm
-npm install @limits.dev/sdk
+npm install @limits/sdk
 ```
 
 ```bash yarn
-yarn add @limits.dev/sdk
+yarn add @limits/sdk
 ```
 
 ```bash pnpm
-pnpm add @limits.dev/sdk
+pnpm add @limits/sdk
 ```
 </CodeGroup>
+
+<Warning>
+  The SDK requires Node.js 18+ for native `fetch` support.
+</Warning>
 
 ## Configuration
 
 Initialize the client with your API key:
 
 ```typescript
-import { Limits } from "@limits.dev/sdk";
+import { Limits } from "@limits/sdk";
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY,
@@ -37,22 +41,47 @@ const limits = new Limits({
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `apiKey` | `string` | Required | Your Limits API key |
-| `baseUrl` | `string` | `https://api.limits.dev` | API base URL |
-| `timeout` | `number` | `5000` | Request timeout in milliseconds |
+| `apiKey` | `string` | Required | Your Limits API key (must start with `sk_`) |
+| `debug` | `boolean` | `false` | Enable debug logging for troubleshooting |
+
+
 
 ## Get Your API Key
 
 1. Sign up at [app.limits.dev](https://app.limits.dev)
-2. Navigate to **Settings → API Keys**
-3. Create a new API key
-4. Add it to your environment variables
+2. Click on the **User Menu** (your profile section at the bottom left of the dashboard)
+3. In the settings modal that opens, click on **API Keys** in the left sidebar
+4. Click **+ Generate API Key** to create a new API key
+5. Add it to your environment variables
 
 ```bash
-export LIMITS_API_KEY="your-api-key"
+export LIMITS_API_KEY="sk_your_api_key_here"
 ```
 
 <Warning>
   Never commit your API key to version control. Use environment variables or a secrets manager.
 </Warning>
+
+## Quick Example
+
+```typescript
+import { Limits } from "@limits/sdk";
+
+const limits = new Limits({
+  apiKey: process.env.LIMITS_API_KEY,
+  debug: true, // Optional: enable debug logging
+});
+
+// Check conditions with structured data
+const decision = await limits.checkConditions('amount-minimum-usd', {
+  amount: 500,
+  currency: 'USD',
+});
+
+if (decision.isBlocked) {
+  console.error('Policy blocked:', decision.data.reason);
+} else {
+  console.log('Policy allowed:', decision.data.reason);
+}
+```
 

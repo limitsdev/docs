@@ -1,59 +1,61 @@
 ---
 title: "Agents"
-description: "Register and manage your AI agents"
+description: "Understanding agents in the Limits ecosystem"
 ---
 
-Agents are the AI systems that perform actions in your application. Each agent is registered with Limits and associated with policies that govern its behavior.
+Agents are the AI systems that perform actions in your application. While the SDK focuses on policy evaluation, agents are managed through the [Limits Dashboard](https://app.limits.dev) or the REST API.
 
-## Registering an Agent
+## Agent Management
+
+Agents are registered and configured through:
+
+- **Dashboard**: [app.limits.dev](https://app.limits.dev) - Visual interface for managing agents
+- **REST API**: Programmatic access to agent management endpoints
+
+The SDK is designed for policy evaluation at runtime, not agent management. When checking policies, you reference policies by their policy key, not by agent.
+
+## Using Policies with Agents
+
+When your agent needs to perform an action, use the SDK to check policies:
 
 ```typescript
-const agent = await limits.agents.create({
-  name: "support-bot",
-  description: "Customer support automation agent",
+import { Limits } from "@limits/sdk";
+
+const limits = new Limits({
+  apiKey: process.env.LIMITS_API_KEY,
 });
-```
 
-## Listing Agents
+// Check conditions before agent action
+const decision = await limits.checkConditions('amount-minimum-usd', {
+  amount: 500,
+  currency: 'USD',
+  // Include any agent context in the conditions
+});
 
-```typescript
-const agents = await limits.agents.list();
-
-for (const agent of agents) {
-  console.log(agent.name, agent.id);
+if (decision.isBlocked) {
+  // Prevent the agent from performing the action
+  console.error('Action blocked:', decision.data.reason);
+} else if (decision.isEscalated) {
+  // Wait for human approval
+  console.warn('Action requires approval:', decision.data.reason);
+} else {
+  // Proceed with the agent action
+  console.log('Action allowed:', decision.data.reason);
 }
 ```
 
-## Agent Properties
+## Policy Keys
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `id` | `string` | Unique agent identifier |
-| `name` | `string` | Human-readable name |
-| `description` | `string` | Agent description |
-| `createdAt` | `string` | Creation timestamp |
-| `policies` | `string[]` | Associated policy IDs |
+Policy keys are identifiers for your policies (e.g., `'amount-minimum-usd'`, `'block-amount-under-9000'`). These are configured in the dashboard and associated with your agents.
 
-## Assigning Policies
+## Next Steps
 
-Associate policies with an agent:
-
-```typescript
-await limits.agents.assignPolicy({
-  agentId: "agent_123",
-  policyId: "policy_456",
-});
-```
-
-## Checking Agent Actions
-
-When checking a policy, reference the agent by name or ID:
-
-```typescript
-const result = await limits.check({
-  agent: "support-bot", // or agent.id
-  action: "send_email",
-  context: { /* ... */ },
-});
-```
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/sdk/policies">
+    Learn how to check policies with the SDK.
+  </Card>
+  <Card title="Human Approvals" icon="user-check" href="/sdk/human-approvals">
+    Manage human approval workflows.
+  </Card>
+</CardGroup>
 
