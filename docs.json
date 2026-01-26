@@ -12,9 +12,11 @@
     "tabs": [
       {
         "tab": "Documentation",
+        "icon": "book-open",
         "groups": [
           {
             "group": "Getting Started",
+            "icon": "rocket",
             "pages": [
               "index",
               "quickstart"
@@ -22,6 +24,7 @@
           },
           {
             "group": "SDK",
+            "icon": "code",
             "pages": [
               "sdk/installation",
               "sdk/policies",
@@ -33,9 +36,11 @@
       },
       {
         "tab": "API Reference",
+        "icon": "square-terminal",
         "groups": [
           {
             "group": "Overview",
+            "icon": "file-text",
             "pages": [
               "api-reference/introduction"
             ]
