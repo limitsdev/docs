@@ -1,0 +1,95 @@
+---
+title: "Logs"
+description: "View and filter policy evaluation logs"
+---
+
+The Logs page provides a comprehensive view of all policy evaluations and their outcomes.
+
+## Viewing Request Logs
+
+The logs table displays:
+
+- **#**: Sequential number
+- **Created**: Timestamp of the evaluation
+- **Action**: Result of the evaluation (Allow, Block, Escalate)
+- **Policy ID**: Which policy was evaluated
+- **Request Data**: Original request payload
+- **Response Data**: Evaluation result and details
+
+## Log Filtering
+
+### Date Range Picker
+
+Filter logs by time:
+
+- **Preset Ranges**: 
+  - Last 24 hours
+  - Last 7 days
+  - Last 30 days
+  - Last 90 days
+  - Custom range
+- **Custom Dates**: Select specific start and end dates
+- **Time Format**: Dates are displayed in your local timezone
+
+### Action Filter
+
+Filter by evaluation result:
+
+- **All Actions**: Show all logs
+- **Allow**: Only show allowed requests
+- **Block**: Only show blocked requests
+- **Escalate**: Only show escalated requests
+
+## Log Details View
+
+Click on any log entry to see:
+
+- **Full Request Payload**: Complete JSON of the incoming request
+- **Response Details**: 
+  - Action taken
+  - Reason for the action
+  - Any errors encountered
+  - Enforcement method used
+- **Policy Information**: Which policy was evaluated
+- **Timestamps**: When the evaluation occurred
+
+## Pagination
+
+- Logs are paginated for performance
+- Default: 10 logs per page
+- Navigate between pages
+- Adjust page size if needed
+
+## Understanding Log Entries
+
+Each log entry contains:
+
+- **ID**: Unique identifier for the log entry
+- **Policy ID**: Identifier of the policy that was evaluated
+- **Organization ID**: Your organization identifier
+- **Created At**: When the evaluation occurred
+- **Request**: The original request payload
+- **Response**: 
+  - `action`: allow, block, or escalate
+  - `reason`: Why this action was taken
+  - `success`: Whether evaluation succeeded
+  - `violated`: Whether any locks were violated
+  - `enforcement`: How the policy was enforced
+  - `details`: Additional information
+
+## Filter Summary
+
+The filter bar shows an active summary of applied filters:
+
+- Time range or custom dates
+- Selected action type
+- Clear all filters button
+
+<CardGroup cols={2}>
+  <Card title="Dashboard" icon="layout" href="/platform/dashboard">
+    View dashboard metrics
+  </Card>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Manage your policies
+  </Card>
+</CardGroup>

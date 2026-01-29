@@ -1,0 +1,91 @@
+---
+title: "Policy Conditions"
+description: "Build conditions using operators, field paths, and CEL expressions"
+---
+
+Conditions determine when specific actions (Allow, Block, Escalate) are triggered.
+
+## Condition Operators
+
+The following operators are available for building conditions:
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `=` or `==` | Equals | `user.risk_level == 'high'` |
+| `!=` | Not equals | `request.amount != 0` |
+| `<` | Less than | `request.amount < 1000` |
+| `<=` | Less than or equal | `request.amount <= 1000` |
+| `>` | Greater than | `request.amount > 1000` |
+| `>=` | Greater than or equal | `request.amount >= 1000` |
+| `contains` | String contains | `user.country contains 'US'` |
+| `null` | Is null/undefined | `user.risk_level null` |
+| `notNull` | Is not null | `user.risk_level notNull` |
+
+## Field Path Selection
+
+Field paths reference data in the request payload:
+
+- Use dot notation: `request.amount`, `user.country`
+- Access nested objects: `request.payment.method`
+- Reference arrays: `request.items[0].price`
+
+**Common field paths:**
+- `request.amount` - Request amount/value
+- `request.currency` - Currency code
+- `user.id` - User identifier
+- `user.risk_level` - User risk assessment
+- `user.country` - User's country
+
+## Logical Operators
+
+Combine multiple conditions:
+
+- **AND (`&&`)**: All conditions must be true
+- **OR (`||`)**: At least one condition must be true
+
+**Example:**
+```
+request.amount > 1000 && user.risk_level == 'high'
+```
+
+## Parentheses Grouping
+
+Use parentheses to control evaluation order:
+
+```
+(request.amount > 1000 || request.amount < 0) && user.verified == true
+```
+
+## Action Priority
+
+When multiple conditions match, actions are prioritized:
+
+1. **Block** (highest priority) - If any block condition matches, the request is blocked
+2. **Escalate** - If block doesn't match but escalate does, request is escalated
+3. **Allow** (lowest priority) - If neither block nor escalate match, allow condition is checked
+
+<Warning>
+Block conditions are always evaluated first, regardless of the order they appear in the policy.
+</Warning>
+
+## CEL Expression Generation
+
+Conditions are automatically converted to CEL (Common Expression Language) expressions:
+
+- The visual condition builder generates CEL expressions
+- You can view the generated CEL in the expression editor
+- CEL expressions are evaluated against request payloads
+
+**Example CEL expression:**
+```
+request.amount > 1000 && user.risk_level == "high"
+```
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Learn about policy management
+  </Card>
+  <Card title="Policy Simulation" icon="flask" href="/platform/simulation">
+    Test your conditions
+  </Card>
+</CardGroup>

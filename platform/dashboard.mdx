@@ -1,0 +1,63 @@
+---
+title: "Dashboard"
+description: "Overview of your platform's activity and key metrics"
+---
+
+The Dashboard provides a comprehensive overview of your platform's activity and key metrics.
+
+## Overview Statistics
+
+The dashboard displays four key metrics in stat cards:
+
+### Active Policies
+
+- Number of currently active policies
+- Policies that are actively enforcing rules
+
+### Pending Approval
+
+- Number of requests awaiting human review
+- These are requests that have been escalated for manual approval
+
+### Rejected
+
+- Total number of blocked/declined requests
+- Requests that were rejected by policies
+
+### Approved
+
+- Total number of allowed/completed requests
+- Requests that passed policy evaluation
+
+## Charts and Visualizations
+
+### Reviewer Workload Area Chart
+
+The dashboard includes an interactive area chart showing:
+
+- **Requests over time** - Visual representation of request volume
+- **Trend analysis** - Identify patterns in your request flow
+- **Time-based filtering** - View data for different time periods
+
+The chart updates in real-time and provides insights into your platform's usage patterns.
+
+## Real-time Data Updates
+
+- Dashboard data refreshes automatically every 60 seconds
+- Statistics are cached for 30 seconds to optimize performance
+- Manual refresh is available if needed
+
+## Understanding Metrics
+
+- **Active Policies**: Policies with status set to "active" are currently enforcing rules
+- **Pending Approvals**: Requests that match "escalate" conditions require human review
+- **Rejected/Approved**: These metrics reflect the outcomes of policy evaluations
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Manage your policies
+  </Card>
+  <Card title="Approvals" icon="user-check" href="/platform/approvals">
+    Review pending approvals
+  </Card>
+</CardGroup>

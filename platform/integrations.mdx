@@ -1,0 +1,97 @@
+---
+title: "Integrations"
+description: "Connect Limits with third-party services and configure notifications"
+---
+
+Connect Limits with third-party services to extend functionality and receive notifications.
+
+## Available Integrations Overview
+
+Currently supported integrations:
+
+- **Slack**: Team communication and notifications
+- **Webhooks**: Custom HTTP endpoints
+
+More integrations are planned for future releases.
+
+## Slack Integration
+
+### Installation and Setup
+
+1. Navigate to the Integrations page
+2. Find the Slack integration card
+3. Click the toggle or "Connect" button
+4. You'll be redirected to Slack for authorization
+5. Select the Slack workspace to connect
+6. Authorize the integration
+7. You'll be redirected back to Limits
+
+### Channel Selection
+
+After connecting Slack:
+
+1. Open a policy in the editor
+2. Navigate to the Notifications section
+3. Select Slack as a notification provider
+4. Choose which Slack channels should receive notifications
+5. Configure channels separately for Allow, Block, and Escalate actions
+
+### Notification Configuration
+
+Slack notifications include:
+
+- Policy name and key
+- Action taken (Allow/Block/Escalate)
+- Request details
+- Evaluation reason
+- Timestamp
+
+### Testing Integration
+
+1. Use the policy simulation feature
+2. Trigger a policy evaluation
+3. Check your configured Slack channels
+4. Verify notifications are received correctly
+
+### Integration Status Management
+
+On the Integrations page:
+
+- **Active**: Integration is connected and working
+- **Inactive**: Integration is disconnected
+- **Error**: Integration has an error (check configuration)
+
+Toggle integrations on/off as needed. Disconnecting an integration doesn't delete the configuration, so you can reconnect later.
+
+## Webhook Notifications
+
+Send HTTP requests to configured endpoints:
+
+- **Webhook URL**: Endpoint to receive notifications
+- **HTTP Method**: Typically POST
+- **Payload**: JSON containing request and policy information
+
+### Webhook Payload Structure
+
+```json
+{
+  "action": "allow|block|escalate",
+  "policy_id": "policy-id",
+  "request": { /* original request payload */ },
+  "reason": "Condition matched: request.amount > 1000",
+  "timestamp": "2026-01-26T10:00:00Z"
+}
+```
+
+<Card title="Notifications" icon="bell" href="/platform/notifications">
+  Learn more about configuring notifications
+</Card>
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Configure notifications in policies
+  </Card>
+  <Card title="API Keys" icon="key" href="/platform/api-keys">
+    Generate API keys for integrations
+  </Card>
+</CardGroup>

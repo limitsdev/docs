@@ -1,0 +1,81 @@
+---
+title: "Approvals"
+description: "Manage human review workflows for escalated requests"
+---
+
+The Approvals feature enables human review of requests that are escalated by policies.
+
+## Approval Request Overview
+
+When a policy's escalate condition matches:
+
+1. The request is blocked from automatic processing
+2. An approval request is created
+3. The request appears in the Approvals page
+4. An authorized user can approve or decline the request
+
+## Viewing Pending Approvals
+
+The Approvals page shows:
+
+- **ID**: Unique identifier for the approval request
+- **Policy ID**: Which policy triggered the escalation
+- **Created At**: When the approval request was created
+- **Status**: Pending, Accepted, or Declined
+- **Request**: Details of the original request (amount, currency, etc.)
+- **Action By**: User who approved or declined (if completed)
+
+## Approving or Declining Requests
+
+For pending requests:
+
+1. Review the request details
+2. Click "Approve" to allow the request
+3. Or click "Decline" to reject the request
+4. The action is recorded and the request is processed accordingly
+
+<Info>
+Only pending requests can be approved or declined. Completed requests show their final status.
+</Info>
+
+## Approval Status Tracking
+
+Approval statuses:
+
+- **PENDING**: Awaiting human review
+- **ACCEPTED**: Request was approved by a reviewer
+- **DECLINED**: Request was declined by a reviewer
+
+Status badges are color-coded:
+- Pending: Gray with clock icon
+- Accepted: Green with checkmark
+- Declined: Red with X icon
+
+## Understanding Approval Workflow
+
+1. **Policy Evaluation**: Request matches escalate condition
+2. **Approval Request Created**: System creates approval request
+3. **Notification**: Reviewer is notified (via Slack, email, etc.)
+4. **Review**: Reviewer examines request details
+5. **Decision**: Approve or decline
+6. **Processing**: Request is processed based on decision
+7. **Completion**: Approval request status is updated
+
+## Request Details
+
+Each approval request shows:
+
+- **Request Amount**: Monetary value of the request
+- **Currency**: Currency code
+- **Policy Information**: Which policy triggered the escalation
+- **Original Request**: Full request payload (expandable)
+- **Timestamps**: When created and when action was taken
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Configure escalation conditions
+  </Card>
+  <Card title="SDK Reference" icon="code" href="/sdk/human-approvals">
+    Manage approvals programmatically
+  </Card>
+</CardGroup>

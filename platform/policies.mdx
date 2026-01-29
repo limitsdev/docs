@@ -1,0 +1,152 @@
+---
+title: "Policies"
+description: "Create, manage, and deploy policies through the platform UI"
+---
+
+Policies are the core of the Limits platform. They define rules that determine how requests are processed.
+
+## Policy Overview and Concepts
+
+A policy consists of:
+
+- **Policy Key**: Unique identifier for the policy
+- **Tags**: Labels for organizing and categorizing policies
+- **Status**: Active or Inactive
+- **Default Action**: What happens when no conditions match (Allow, Block, or Escalate)
+- **Conditions**: Rules that determine when to apply specific actions
+- **Locks**: Rate limiting and time-based restrictions
+- **Notifications**: Alerts sent when actions are taken
+
+## Creating Policies via AI Assistant
+
+The easiest way to create a policy is using the AI Assistant:
+
+1. Navigate to the Assistant page (accessible from the sidebar or by going to `/assistant`)
+2. Enter your policy requirements in natural language
+3. The AI will process your request and generate a policy configuration
+4. Review and refine the generated policy
+5. Deploy the policy when ready
+
+**Example queries:**
+- "Block all transactions over $10,000"
+- "Allow up to 5 requests per hour per user"
+- "Escalate requests from high-risk users for manual review"
+
+<Card title="AI Assistant" icon="sparkles" href="/platform/ai-assistant">
+  Learn more about creating policies with AI
+</Card>
+
+## Policy Editing
+
+Policies can be edited in two modes:
+
+### Conditions Mode
+
+Visual condition builder for creating policies:
+
+- Build conditions using a visual interface
+- Select field paths, operators, and values
+- Combine conditions with logical operators
+- See real-time CEL expression generation
+
+### Instructions Mode
+
+Natural language input for policy creation:
+
+- Describe policies in plain English
+- AI generates the policy configuration
+- Continue conversation to refine the policy
+
+## Policy Structure
+
+### Policy Key and Tags
+
+- **Policy Key**: Must be unique across your organization
+- **Tags**: Add multiple tags to organize policies (e.g., "payment", "fraud-prevention", "high-priority")
+
+### Default Action
+
+When no conditions match, the default action is applied:
+
+- **ALLOW**: Request is approved
+- **BLOCK**: Request is rejected
+- **ESCALATE**: Request is sent for human approval
+
+### Condition Logic (CEL Expressions)
+
+Policies use CEL (Common Expression Language) for condition evaluation:
+
+- Conditions are evaluated against incoming request payloads
+- Multiple conditions can be combined with logical operators
+- Each action (Allow, Block, Escalate) can have its own set of conditions
+
+<Card title="Policy Conditions" icon="code" href="/platform/policy-conditions">
+  Learn about building conditions
+</Card>
+
+### Lock Mechanisms
+
+Three types of locks can be applied:
+
+1. **Limit Lock**: Rate limiting based on count or budget
+2. **Time Window Lock**: Restrict actions to specific days and times
+3. **Velocity Lock**: Detect rapid request patterns
+
+<Card title="Policy Locks" icon="lock" href="/platform/policy-locks">
+  Learn about configuring locks
+</Card>
+
+### Notifications
+
+Configure notifications for each action:
+
+- **Slack**: Send notifications to Slack channels
+- **Webhooks**: Send HTTP requests to configured endpoints
+
+<Card title="Notifications" icon="bell" href="/platform/notifications">
+  Learn about setting up notifications
+</Card>
+
+## Policy Status
+
+- **Active**: Policy is currently enforcing rules
+- **Inactive**: Policy is disabled and not evaluating requests
+
+Toggle policy status from the policy editor or policies list.
+
+## Policy Deployment
+
+After creating or editing a policy:
+
+1. Review all settings (conditions, locks, notifications)
+2. Test the policy using the simulation feature
+3. Click "Deploy" to save and activate the policy
+4. The policy will immediately start evaluating requests
+
+<Card title="Policy Simulation" icon="flask" href="/platform/simulation">
+  Learn about testing policies
+</Card>
+
+## Policy Search and Filtering
+
+On the Policies page, you can:
+
+- **Search by key**: Use the search box to find policies by their key
+- **Filter by status**: Show only active or inactive policies
+- **Clear filters**: Reset all filters to view all policies
+
+## Policy Pagination
+
+- Policies are paginated for better performance
+- Default page size is 10 policies per page
+- Navigate between pages using pagination controls
+- Adjust page size if needed
+
+<CardGroup cols={2}>
+  <Card title="AI Assistant" icon="sparkles" href="/platform/ai-assistant">
+    Create policies with AI
+  </Card>
+  <Card title="SDK Reference" icon="code" href="/sdk/policies">
+    Use policies programmatically
+  </Card>
+</CardGroup>

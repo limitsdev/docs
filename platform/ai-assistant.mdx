@@ -1,0 +1,90 @@
+---
+title: "AI Assistant"
+description: "Create policies using natural language with AI-powered generation"
+---
+
+The AI Assistant is a powerful tool that converts natural language descriptions into structured policy configurations.
+
+## Natural Language to Policy Conversion
+
+Simply describe what you want your policy to do, and the AI will:
+
+1. Analyze your requirements
+2. Generate appropriate conditions
+3. Configure locks and notifications
+4. Create a complete policy structure
+
+## Streaming AI Experience
+
+When you submit a query, the AI processes it in real-time:
+
+1. **Processing your request** - Initial analysis begins
+2. **Analyzing requirements** - AI understands your intent
+3. **Generating policy configuration** - Policy structure is created
+4. **Finalizing** - Policy is ready for review
+
+You'll see progress indicators for each step as the AI works.
+
+## Two Creation Modes
+
+### Instructions Mode
+
+Access via `/assistant/instructions`:
+
+- Enter natural language descriptions
+- AI generates complete policy configurations
+- Best for complex policies or when you want AI to handle the details
+
+### Conditions Mode
+
+Access via `/assistant/conditions`:
+
+- Visual condition builder interface
+- More control over individual conditions
+- Best when you know exactly what conditions you need
+
+## Chat Interface for Policy Refinement
+
+After the initial policy is generated:
+
+- Continue the conversation to refine the policy
+- Ask for modifications: "Make the limit $5,000 instead"
+- Request additions: "Also add a time window restriction"
+- The AI maintains context throughout the conversation
+
+## Policy Simulation and Testing
+
+Test policies before deployment:
+
+- Use the "Simulate" tab in the sidebar
+- Enter sample payloads
+- See how the policy evaluates the payload
+- View evaluation traces and results
+
+<Card title="Policy Simulation" icon="flask" href="/platform/simulation">
+  Learn about testing policies
+</Card>
+
+## Expression Editor (CEL Payload Editing)
+
+Advanced users can edit CEL expressions directly:
+
+- Use the "Payload" tab to view and edit raw CEL expressions
+- Modify expressions for fine-grained control
+- See how changes affect the policy structure
+
+## Thread Management and Conversation Continuity
+
+- Each conversation has a unique thread ID
+- Threads maintain context across multiple messages
+- You can return to previous conversations
+- Policy configurations are linked to their threads
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Learn about policy management
+  </Card>
+  <Card title="Policy Conditions" icon="code" href="/platform/policy-conditions">
+    Understand condition logic
+  </Card>
+</CardGroup>

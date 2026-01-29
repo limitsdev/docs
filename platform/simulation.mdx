@@ -1,0 +1,80 @@
+---
+title: "Policy Simulation"
+description: "Test policies with sample payloads before deployment"
+---
+
+Test policies before deployment to ensure they work as expected.
+
+## Testing Policies with Sample Payloads
+
+1. Open a policy in the editor
+2. Navigate to the "Simulate" tab in the right sidebar
+3. Enter a sample payload (JSON format)
+4. Click "Evaluate" to see how the policy processes the payload
+
+## Quick Test Templates
+
+The simulator provides quick templates for common scenarios:
+
+- **Basic Request**: Simple request with amount and user
+- **High-Value Transaction**: Large amount transaction
+- **High-Risk User**: Request from high-risk user profile
+- **Custom**: Create your own payload
+
+## Custom Payload Input
+
+Enter any JSON payload to test:
+
+```json
+{
+  "request": {
+    "amount": 5000,
+    "currency": "USD"
+  },
+  "user": {
+    "id": "user-123",
+    "risk_level": "high",
+    "country": "US"
+  }
+}
+```
+
+## Evaluation Trace Visualization
+
+After evaluation, you'll see:
+
+- **Decision**: Allow, Block, or Escalate
+- **Matched Conditions**: Which conditions evaluated to true
+- **Evaluation Steps**: Step-by-step trace of the evaluation
+- **Execution Time**: How long the evaluation took
+
+## Simulation History
+
+- Previous simulations are saved in the history
+- Re-run previous simulations
+- Compare results across different payloads
+
+## Unit Tests Display
+
+View and manage unit tests for the policy:
+
+- Predefined test cases
+- Expected outcomes
+- Run all tests to validate policy behavior
+
+## Real-time Condition Evaluation
+
+As you modify conditions, you can:
+
+- Test immediately with the current payload
+- See how changes affect the evaluation
+- Iterate quickly to refine your policy
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Learn about policy management
+  </Card>
+  <Card title="Policy Conditions" icon="code" href="/platform/policy-conditions">
+    Understand condition logic
+  </Card>
+</CardGroup>

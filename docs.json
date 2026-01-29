@@ -35,6 +35,54 @@
         ]
       },
       {
+        "tab": "Platform Guide",
+        "icon": "layout",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "icon": "rocket",
+            "pages": [
+              "platform/getting-started",
+              "platform/dashboard"
+            ]
+          },
+          {
+            "group": "Core Features",
+            "icon": "sparkles",
+            "pages": [
+              "platform/policies",
+              "platform/ai-assistant"
+            ]
+          },
+          {
+            "group": "Policy Configuration",
+            "icon": "settings",
+            "pages": [
+              "platform/policy-conditions",
+              "platform/policy-locks",
+              "platform/simulation"
+            ]
+          },
+          {
+            "group": "Workflows",
+            "icon": "workflow",
+            "pages": [
+              "platform/approvals",
+              "platform/logs"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "icon": "plug",
+            "pages": [
+              "platform/integrations",
+              "platform/notifications",
+              "platform/api-keys"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "API Reference",
         "icon": "square-terminal",
         "groups": [

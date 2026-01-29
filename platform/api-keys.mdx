@@ -1,0 +1,80 @@
+---
+title: "API Keys"
+description: "Generate and manage API keys for programmatic access"
+---
+
+API keys enable programmatic access to the Limits platform for integration with your applications.
+
+## Generating API Keys
+
+1. Navigate to the API Keys page
+2. Click "Generate API Key" button
+3. A new API key will be created
+4. **Important**: Copy the key immediately - it's only shown once
+5. Store the key securely
+
+<Warning>
+API keys are only displayed once when created. Make sure to copy and store them securely.
+</Warning>
+
+## Viewing API Keys List
+
+The API Keys table displays:
+
+- **Key**: Masked version of the key (for security)
+- **Created By**: User who created the key
+- **Created**: When the key was created
+- **Last Used**: Most recent usage timestamp
+- **Status**: Active or Inactive
+
+## API Key Status Management
+
+Toggle API keys between Active and Inactive:
+
+- **Active**: Key can be used for API requests
+- **Inactive**: Key is disabled and cannot be used
+
+<Info>
+Best Practice: Deactivate unused keys instead of deleting them to maintain audit history.
+</Info>
+
+## API Key Security Best Practices
+
+1. **Never share keys**: Keep API keys confidential
+2. **Rotate regularly**: Generate new keys periodically
+3. **Use environment variables**: Don't hardcode keys in your application
+4. **Limit permissions**: Use keys with minimal required permissions
+5. **Monitor usage**: Check "Last Used" to detect unauthorized access
+6. **Deactivate unused keys**: Disable keys that are no longer needed
+
+## Viewing Key Details
+
+Each API key shows:
+
+- **Created By**: User account that generated the key
+- **Created Date**: When the key was first created
+- **Last Used**: Most recent API request using this key
+- **Status**: Current state (Active/Inactive)
+
+## Using API Keys
+
+Include the API key in your HTTP requests:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+Example:
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+     https://api.limits.com/v1/policies
+```
+
+<CardGroup cols={2}>
+  <Card title="SDK Reference" icon="code" href="/sdk/installation">
+    Learn how to use API keys with the SDK
+  </Card>
+  <Card title="Integrations" icon="plug" href="/platform/integrations">
+    Set up integrations
+  </Card>
+</CardGroup>

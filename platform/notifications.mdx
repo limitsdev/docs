@@ -1,0 +1,78 @@
+---
+title: "Notifications"
+description: "Configure notifications for policy actions"
+---
+
+Configure notifications to be sent when policy actions are taken.
+
+## Slack Integration for Notifications
+
+### Setup
+
+1. Navigate to the Integrations page
+2. Find the Slack integration card
+3. Click to enable and connect your Slack workspace
+4. Authorize the integration
+5. Select channels for notifications
+
+### Configuration
+
+- **Channel Selection**: Choose which Slack channels receive notifications
+- **Per-Action Configuration**: Set different channels for Allow, Block, and Escalate actions
+- **Notification Content**: Notifications include request details and policy information
+
+<Card title="Integrations" icon="plug" href="/platform/integrations">
+  Learn about setting up Slack integration
+</Card>
+
+## Webhook Notifications
+
+Send HTTP requests to configured endpoints:
+
+- **Webhook URL**: Endpoint to receive notifications
+- **HTTP Method**: Typically POST
+- **Payload**: JSON containing request and policy information
+
+### Webhook Payload Structure
+
+```json
+{
+  "action": "allow|block|escalate",
+  "policy_id": "policy-id",
+  "request": { /* original request payload */ },
+  "reason": "Condition matched: request.amount > 1000",
+  "timestamp": "2026-01-26T10:00:00Z"
+}
+```
+
+## Per-Action Notification Configuration
+
+Configure notifications separately for each action:
+
+- **Allow Notifications**: Sent when requests are allowed
+- **Block Notifications**: Sent when requests are blocked
+- **Escalate Notifications**: Sent when requests are escalated
+
+Each action can have:
+
+- Multiple notification channels (Slack)
+- Multiple webhook endpoints
+- Independent enable/disable settings
+
+## Notification Setup and Management
+
+1. Open a policy in the editor
+2. Navigate to the action tab (Allow, Block, or Escalate)
+3. Scroll to the Notifications section
+4. Enable notifications for the action
+5. Add Slack channels or webhook URLs
+6. Save the policy
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Configure notifications in policies
+  </Card>
+  <Card title="Integrations" icon="plug" href="/platform/integrations">
+    Set up integrations
+  </Card>
+</CardGroup>
