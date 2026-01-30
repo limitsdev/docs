@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "almond",
   "name": "Limits.dev",
   "colors": {
     "primary": "#000000",
@@ -8,91 +8,58 @@
     "dark": "#000000"
   },
   "favicon": "/favicon.svg",
+  "styling": {
+    "eyebrows": "breadcrumbs"
+  },
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Documentation",
+        "group": "Introduction",
         "icon": "book-open",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "icon": "rocket",
-            "pages": [
-              "index",
-              "quickstart"
-            ]
-          },
-          {
-            "group": "SDK",
-            "icon": "code",
-            "pages": [
-              "sdk/installation",
-              "sdk/policies",
-              "sdk/agents",
-              "sdk/human-approvals"
-            ]
-          }
+        "pages": [
+          "overview",
+          "index",
+          "quickstart",
+          "platform/instructions-vs-conditions"
         ]
       },
       {
-        "tab": "Platform Guide",
-        "icon": "layout",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "icon": "rocket",
-            "pages": [
-              "platform/getting-started",
-              "platform/dashboard"
-            ]
-          },
-          {
-            "group": "Core Features",
-            "icon": "sparkles",
-            "pages": [
-              "platform/policies",
-              "platform/ai-assistant"
-            ]
-          },
-          {
-            "group": "Policy Configuration",
-            "icon": "settings",
-            "pages": [
-              "platform/policy-conditions",
-              "platform/policy-locks",
-              "platform/simulation"
-            ]
-          },
-          {
-            "group": "Workflows",
-            "icon": "workflow",
-            "pages": [
-              "platform/approvals",
-              "platform/logs"
-            ]
-          },
-          {
-            "group": "Integrations",
-            "icon": "plug",
-            "pages": [
-              "platform/integrations",
-              "platform/notifications",
-              "platform/api-keys"
-            ]
-          }
+        "group": "Guides",
+        "icon": "list",
+        "pages": [
+          "platform/getting-started",
+          "platform/dashboard",
+          "platform/policies",
+          "platform/ai-assistant",
+          "platform/policy-conditions",
+          "platform/simulation",
+          "platform/approvals",
+          "platform/logs",
+          "platform/integrations",
+          "platform/notifications",
+          "platform/api-keys"
         ]
       },
       {
-        "tab": "API Reference",
+        "group": "SDK",
+        "icon": "code",
+        "pages": [
+          "sdk/installation",
+          "sdk/policies",
+          "sdk/human-approvals",
+          "sdk/reference"
+        ]
+      },
+      {
+        "group": "API Reference",
         "icon": "square-terminal",
-        "groups": [
-          {
-            "group": "Overview",
-            "icon": "file-text",
-            "pages": [
-              "api-reference/introduction"
-            ]
-          }
+        "pages": [
+          "api-reference/introduction",
+          "api-reference/evaluate-policy",
+          "api-reference/list-human-approvals",
+          "api-reference/get-human-approvals-by-policy",
+          "api-reference/approve-human-approval",
+          "api-reference/decline-human-approval"
         ]
       }
     ],
@@ -111,20 +78,13 @@
     "dark": "/logo/dark.svg"
   },
   "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:support@limits.dev"
-      }
-    ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
+      "label": "Get started",
       "href": "https://app.limits.dev"
     }
   },
   "footer": {
-    "socials": {
-    }
+    "socials": {}
   }
 }

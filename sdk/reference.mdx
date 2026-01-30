@@ -1,0 +1,73 @@
+---
+title: "Reference"
+description: "TypeScript types and API summary for @limits/sdk"
+---
+
+## API Reference Summary
+
+| Method / constructor       | Description |
+|----------------------------|-------------|
+| `new Limits(config)`       | Create client. `config.apiKey` required, `config.debug` optional. |
+| `limits.check(policyKey, input)` | Evaluate policy. `input` = object (conditions) or string (interaction text). Returns `PolicyEvaluationResult`. |
+| `limits.listHumanApprovals()`    | List human approvals. Returns `HumanApproval[]`. |
+| `limits.approveHumanApproval(id)`| Approve by UUID. Returns `HumanApproval`. |
+| `limits.declineHumanApproval(id)`| Decline by UUID. Returns `HumanApproval`. |
+| `limits.getBaseUrl()`      | Returns `"https://api.limits.dev/api"`. |
+
+### Policy evaluation
+
+- **Endpoint:** `POST https://api.limits.dev/api/policies/{policyKey}/evaluate`
+- **Conditions:** body `{ "request": { ... } }`
+- **Interaction text:** body `{ "response": { "text": "..." } }`
+- **Response:** SDK normalizes API `{ meta, data }` into `PolicyEvaluationResult` (with `data.action`, `data.reason`, `errors`, and `isAllowed` / `isBlocked` / `isEscalated`).
+
+### Human approvals
+
+- List: `GET .../human-approvals`
+- Approve: `POST .../human-approvals/approve` body `{ "id": "<uuid>" }`
+- Decline: `POST .../human-approvals/decline` body `{ "id": "<uuid>" }`
+
+---
+
+## TypeScript types
+
+Import types and enums for type safety:
+
+```typescript
+import {
+  Limits,
+  type PolicyEvaluationResult,
+  type SDKConfig,
+  type HumanApproval,
+  type ActionByUser,
+  HumanApprovalStatus,
+} from '@limits/sdk';
+```
+
+### Exported types
+
+| Type | Description |
+|------|-------------|
+| `PolicyEnforcement` | `'CEL' \| 'LLM' \| 'HYBRID'` |
+| `PolicyAction` | `'block' \| 'allow' \| 'escalate'` |
+| `EvaluatePolicyInput` | Internal body shape (`request` / `response` / `text`) |
+| `LLMResult`, `PolicyEvaluationDetails` | Evaluation details |
+| `PolicyEvaluationResult` | Return type of `check()` |
+| `SDKConfig` | Constructor config |
+| `APIErrorResponse` | `{ statusCode, message }` |
+| `HumanApproval`, `ActionByUser` | Human approval shapes |
+| `HumanApprovalStatus` | Enum: `PENDING`, `ALLOWED`, `DECLINED` |
+
+### Exported errors
+
+| Error | When |
+|-------|------|
+| `LimitsSDKError` | Base class for all SDK errors |
+| `InvalidAPIKeyError` | Invalid or missing API key |
+| `InvalidPolicyKeyError` | Empty or invalid `policyKey` in `check()` |
+| `InvalidInputError` | Invalid `input` in `check()` or invalid UUID in approve/decline |
+| `APIRequestError` | API returned 4xx/5xx |
+| `NetworkError` | Connection/DNS/network failure |
+| `TimeoutError` | Request timeout (if used with custom fetch/timeout logic) |
+
+All errors extend `LimitsSDKError`. Use `instanceof` for handling.

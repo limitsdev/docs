@@ -61,33 +61,26 @@ Add a new tab/section in `docs.json` for platform documentation, separate from S
    - *Source: Lines 349-426*
    - *Note: Can be condensed into Policy Management*
 
-8. **Policy Locks**
-   - Limit locks (count/budget)
-   - Time window locks
-   - Velocity locks
-   - *Source: Lines 429-504*
-   - *Note: Can be part of Policy Management*
-
-9. **Notifications**
+8. **Notifications**
    - Slack notifications
    - Webhook notifications
    - Per-action configuration
    - *Source: Lines 507-568*
    - *Note: Can be merged with Integrations*
 
-10. **Policy Simulation & Testing**
+9. **Policy Simulation & Testing**
     - Testing with sample payloads
     - Evaluation trace
     - *Source: Lines 571-639*
     - *Note: Important for users to test before deployment*
 
-11. **Logs**
+10. **Logs**
     - Viewing logs
     - Filtering (date range, action type)
     - Log details
     - *Source: Lines 642-723*
 
-12. **API Keys**
+11. **API Keys**
     - Generating keys
     - Managing keys
     - Security best practices
@@ -95,7 +88,7 @@ Add a new tab/section in `docs.json` for platform documentation, separate from S
 
 ### Lower Priority (Can be simplified or moved)
 
-13. **Billing & Subscriptions**
+12. **Billing & Subscriptions**
     - Plan overview
     - Upgrading/downgrading
     - *Source: Lines 925-993*
@@ -107,14 +100,14 @@ Add a new tab/section in `docs.json` for platform documentation, separate from S
     - *Source: Lines 997-1045*
     - *Note: Can be simplified to just sign up/sign in basics*
 
-15. **Advanced Features**
+14. **Advanced Features**
     - Policy validation
     - CEL advanced usage
     - Error handling
     - *Source: Lines 1048-1134*
     - *Note: Can be merged into relevant sections*
 
-16. **Glossary**
+15. **Glossary**
     - Key terms definitions
     - *Source: Lines 1137-1170*
     - *Note: Can be a separate glossary page or inline definitions*
@@ -129,7 +122,6 @@ docs/
 │   ├── policies.mdx                  # Policy management UI (create, edit, deploy)
 │   ├── ai-assistant.mdx             # AI Assistant usage
 │   ├── policy-conditions.mdx        # Conditions, operators, CEL (condensed)
-│   ├── policy-locks.mdx             # Locks (condensed)
 │   ├── notifications.mdx             # Notifications (merged with integrations)
 │   ├── simulation.mdx                # Policy testing
 │   ├── logs.mdx                      # Viewing and filtering logs
@@ -191,7 +183,6 @@ Add a new tab for Platform documentation:
       "group": "Policy Configuration",
       "pages": [
         "platform/policy-conditions",
-        "platform/policy-locks",
         "platform/simulation"
       ]
     },

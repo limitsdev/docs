@@ -1,66 +1,37 @@
 ---
-title: "API Reference"
-description: "Limits REST API documentation"
+title: "Introduction"
+description: "Limits REST API for policy evaluation and human approvals"
 ---
 
-The Limits API allows you to programmatically manage policies, agents, and check policy decisions.
+The Limits API lets you evaluate policies and manage human approval workflows programmatically. All endpoints require API key authentication.
 
 ## Base URL
 
 ```
-https://api.limits.dev/v1
+https://api.limits.dev
 ```
 
 ## Authentication
 
-All API requests require an API key passed in the `Authorization` header:
+All requests must include your API key in the `Authorization` header as a Bearer token:
 
 ```bash
-curl https://api.limits.dev/v1/agents \
-  -H "Authorization: Bearer YOUR_API_KEY"
+Authorization: Bearer YOUR_API_KEY
 ```
 
-## Rate Limits
+Create and manage API keys in the [Platform API Keys](/platform/api-keys) page.
 
-| Plan | Requests/month |
-|------|---------------|
-| Free | 1,000 |
-| Startup | 100,000 |
-| Enterprise | Unlimited |
+## Endpoints Overview
 
-## Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/policies/{policyKey}/evaluate` | Evaluate a policy against a request payload |
+| GET | `/api/human-approvals` | List all human approval requests for your organization |
+| GET | `/api/human-approvals/{policyId}` | List human approvals filtered by policy ID |
+| POST | `/api/human-approvals/approve` | Approve a pending human approval request |
+| POST | `/api/human-approvals/decline` | Decline a pending human approval request |
 
-### Policy Check
-
-```bash
-POST /v1/check
-```
-
-Check if an action is allowed by policy:
-
-```bash
-curl -X POST https://api.limits.dev/v1/check \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "agent": "support-bot",
-    "action": "send_email",
-    "context": {
-      "recipient": "user@example.com"
-    }
-  }'
-```
-
-### Response
-
-```json
-{
-  "allowed": true,
-  "policyId": "pol_abc123",
-  "policyVersion": "1.0.0",
-  "timestamp": "2025-01-18T12:00:00Z"
-}
-```
+Use the **Policies** and **Human Approvals** sections in the sidebar to open each endpoint’s reference page: parameters, request/response schemas, and example requests.
 
 <Card title="SDK Reference" icon="code" href="/sdk/installation">
   For a better developer experience, use our SDK instead of raw API calls.

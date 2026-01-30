@@ -5,26 +5,6 @@ description: "Configure notifications for policy actions"
 
 Configure notifications to be sent when policy actions are taken.
 
-## Slack Integration for Notifications
-
-### Setup
-
-1. Navigate to the Integrations page
-2. Find the Slack integration card
-3. Click to enable and connect your Slack workspace
-4. Authorize the integration
-5. Select channels for notifications
-
-### Configuration
-
-- **Channel Selection**: Choose which Slack channels receive notifications
-- **Per-Action Configuration**: Set different channels for Allow, Block, and Escalate actions
-- **Notification Content**: Notifications include request details and policy information
-
-<Card title="Integrations" icon="plug" href="/platform/integrations">
-  Learn about setting up Slack integration
-</Card>
-
 ## Webhook Notifications
 
 Send HTTP requests to configured endpoints:
@@ -55,7 +35,6 @@ Configure notifications separately for each action:
 
 Each action can have:
 
-- Multiple notification channels (Slack)
 - Multiple webhook endpoints
 - Independent enable/disable settings
 
@@ -65,8 +44,36 @@ Each action can have:
 2. Navigate to the action tab (Allow, Block, or Escalate)
 3. Scroll to the Notifications section
 4. Enable notifications for the action
-5. Add Slack channels or webhook URLs
+5. Add webhook URLs
 6. Save the policy
+
+<Card title="Integrations" icon="plug" href="/platform/integrations">
+  Set up webhooks and see upcoming integrations
+</Card>
+
+---
+
+## Slack — Coming Soon
+
+<Info>
+**Upcoming:** Slack integration is in development. You will soon be able to send policy notifications (Allow, Block, Escalate) to Slack channels. Below is a preview of how it will work.
+</Info>
+
+### Planned Setup
+
+1. Navigate to the Integrations page
+2. Find the Slack integration card
+3. Click to enable and connect your Slack workspace
+4. Authorize the integration
+5. Select channels for notifications
+
+### Planned Configuration
+
+- **Channel Selection**: Choose which Slack channels receive notifications
+- **Per-Action Configuration**: Set different channels for Allow, Block, and Escalate actions
+- **Notification Content**: Notifications will include request details and policy information
+
+When Slack is available, you will be able to add Slack channels alongside webhook URLs in the Notifications section of each policy.
 
 <CardGroup cols={2}>
   <Card title="Policies" icon="shield" href="/platform/policies">

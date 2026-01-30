@@ -5,89 +5,49 @@ description: "Connect Limits with third-party services and configure notificatio
 
 Connect Limits with third-party services to extend functionality and receive notifications.
 
-## Available Integrations Overview
+## Available Integrations
 
-Currently supported integrations:
+### Supported now
 
-- **Slack**: Team communication and notifications
-- **Webhooks**: Custom HTTP endpoints
+- **Webhooks** — Send policy notifications (Allow, Block, Escalate) to any HTTP endpoint. Configure webhook URLs in your policies. See [Notifications](/platform/notifications) for setup and payload details.
 
-More integrations are planned for future releases.
+### Coming soon
 
-## Slack Integration
+- **Slack** — Send notifications to Slack channels. Coming in a future release.
 
-### Installation and Setup
+---
+
+## Slack — Coming Soon
+
+<Info>
+**Upcoming:** Slack integration is in development. When it ships, you will be able to connect your Slack workspace and send policy notifications to channels. Below is a preview.
+</Info>
+
+### Planned Setup
 
 1. Navigate to the Integrations page
 2. Find the Slack integration card
 3. Click the toggle or "Connect" button
-4. You'll be redirected to Slack for authorization
-5. Select the Slack workspace to connect
-6. Authorize the integration
-7. You'll be redirected back to Limits
+4. Authorize with your Slack workspace
+5. Select channels for notifications
+6. Configure channels per action (Allow, Block, Escalate) in policy Notifications
 
-### Channel Selection
+### Planned Notification Content
 
-After connecting Slack:
-
-1. Open a policy in the editor
-2. Navigate to the Notifications section
-3. Select Slack as a notification provider
-4. Choose which Slack channels should receive notifications
-5. Configure channels separately for Allow, Block, and Escalate actions
-
-### Notification Configuration
-
-Slack notifications include:
+Slack notifications will include:
 
 - Policy name and key
-- Action taken (Allow/Block/Escalate)
+- Action taken (Allow / Block / Escalate)
 - Request details
 - Evaluation reason
 - Timestamp
 
-### Testing Integration
-
-1. Use the policy simulation feature
-2. Trigger a policy evaluation
-3. Check your configured Slack channels
-4. Verify notifications are received correctly
-
-### Integration Status Management
-
-On the Integrations page:
-
-- **Active**: Integration is connected and working
-- **Inactive**: Integration is disconnected
-- **Error**: Integration has an error (check configuration)
-
-Toggle integrations on/off as needed. Disconnecting an integration doesn't delete the configuration, so you can reconnect later.
-
-## Webhook Notifications
-
-Send HTTP requests to configured endpoints:
-
-- **Webhook URL**: Endpoint to receive notifications
-- **HTTP Method**: Typically POST
-- **Payload**: JSON containing request and policy information
-
-### Webhook Payload Structure
-
-```json
-{
-  "action": "allow|block|escalate",
-  "policy_id": "policy-id",
-  "request": { /* original request payload */ },
-  "reason": "Condition matched: request.amount > 1000",
-  "timestamp": "2026-01-26T10:00:00Z"
-}
-```
-
-<Card title="Notifications" icon="bell" href="/platform/notifications">
-  Learn more about configuring notifications
-</Card>
+We’ll update this page and the Notifications docs when Slack is available.
 
 <CardGroup cols={2}>
+  <Card title="Notifications" icon="bell" href="/platform/notifications">
+    Configure webhooks and notifications
+  </Card>
   <Card title="Policies" icon="shield" href="/platform/policies">
     Configure notifications in policies
   </Card>

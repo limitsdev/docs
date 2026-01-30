@@ -1,115 +1,167 @@
 ---
 title: "Human Approvals"
-description: "Manage human approval workflows for escalated policies"
+description: "List, approve, and decline human approval requests"
 ---
 
-When a policy evaluation results in an `escalate` action, it creates a human approval request. The SDK provides methods to list, approve, and decline these approvals.
+When a policy evaluation returns **`escalate`**, it creates a human approval request. The SDK provides methods to list and resolve these approvals.
 
-## Listing Approvals
+## Method: `listHumanApprovals()`
 
-Get all human approval requests for your organization:
+Returns all human approval records for your organization.
+
+**Signature**
 
 ```typescript
+async listHumanApprovals(): Promise<HumanApproval[]>
+```
+
+**Returns:** Array of [HumanApproval](#humanapproval-object) objects.
+
+**Throws:** `APIRequestError`, `NetworkError`.
+
+```typescript
+import { HumanApprovalStatus } from '@limits/sdk';
+
 const approvals = await limits.listHumanApprovals();
+const pending = approvals.filter((a) => a.status === HumanApprovalStatus.PENDING);
 
-// Filter for pending approvals
-const pendingApprovals = approvals.filter(
-  approval => approval.status === 'PENDING'
-);
-
-for (const approval of pendingApprovals) {
-  console.log(`Approval ${approval.id} needs review for policy ${approval.policy_id}`);
+for (const a of pending) {
+  console.log(`Approval ${a.id} — policy ${a.policy_id} — ${a.status}`);
 }
 ```
 
-## Approving an Approval
+---
 
-Approve a pending human approval request:
+## Method: `approveHumanApproval(id)`
+
+Marks a human approval request as approved.
+
+**Signature**
 
 ```typescript
-const approval = await limits.approveHumanApproval('123e4567-e89b-12d3-a456-426614174000');
-
-console.log(`Approval ${approval.id} has been approved`);
-console.log(`Status: ${approval.status}`);
-if (approval.action_by_user) {
-  console.log(`Approved by: ${approval.action_by_user.first_name} ${approval.action_by_user.last_name}`);
-}
+async approveHumanApproval(id: string): Promise<HumanApproval>
 ```
 
-## Declining an Approval
+| Parameter | Type     | Required | Description |
+|-----------|----------|----------|-------------|
+| `id`      | `string` | **Yes**  | UUID of the human approval (e.g. `123e4567-e89b-12d3-a456-426614174000`). |
 
-Decline a pending human approval request:
+**Returns:** Updated [HumanApproval](#humanapproval-object) (e.g. `status: 'ALLOWED'`).
+
+**Throws**
+
+- `InvalidInputError` — `id` not a valid UUID v4.
+- `APIRequestError`, `NetworkError`.
 
 ```typescript
-const approval = await limits.declineHumanApproval('123e4567-e89b-12d3-a456-426614174000');
-
-console.log(`Approval ${approval.id} has been declined`);
-console.log(`Status: ${approval.status}`);
+const updated = await limits.approveHumanApproval('123e4567-e89b-12d3-a456-426614174000');
+console.log('Approval status:', updated.status); // ALLOWED
 ```
 
-## Approval Status
+---
 
-Approvals have three possible statuses:
+## Method: `declineHumanApproval(id)`
+
+Marks a human approval request as declined.
+
+**Signature**
 
 ```typescript
-enum HumanApprovalStatus {
-  PENDING = 'PENDING',    // Waiting for review
-  ALLOWED = 'ALLOWED',    // Approved
-  DECLINED = 'DECLINED',  // Declined
-}
+async declineHumanApproval(id: string): Promise<HumanApproval>
 ```
 
-## Approval Object
+| Parameter | Type     | Required | Description |
+|-----------|----------|----------|-------------|
+| `id`      | `string` | **Yes**  | UUID of the human approval. |
 
-The approval object contains:
+**Returns:** Updated [HumanApproval](#humanapproval-object) (e.g. `status: 'DECLINED'`).
+
+**Throws:** Same as `approveHumanApproval(id)`.
 
 ```typescript
-interface HumanApproval {
-  id: string;                    // UUID of the approval
-  policy_id: string;             // Policy that triggered the escalation
-  organization_id: string;        // Organization ID
-  status: HumanApprovalStatus;    // Current status
-  request?: any;                  // Original request data
-  response?: any;                 // Original response data
-  action_by?: string;             // User ID who took action
-  action_by_user?: ActionByUser;  // User details
-  created_at: string;             // Creation timestamp
-  updated_at: string;             // Last update timestamp
-}
+const updated = await limits.declineHumanApproval('123e4567-e89b-12d3-a456-426614174000');
+console.log('Approval status:', updated.status); // DECLINED
 ```
 
-## Complete Example
+---
+
+## Method: `getBaseUrl()`
+
+Returns the base URL used by the SDK (read-only).
+
+**Signature**
 
 ```typescript
-import { Limits } from "@limits/sdk";
+getBaseUrl(): string
+```
 
-const limits = new Limits({
-  apiKey: process.env.LIMITS_API_KEY,
-});
+**Returns:** `"https://api.limits.dev/api"`.
+
+---
+
+## HumanApproval object
+
+Returned by `listHumanApprovals()`, `approveHumanApproval()`, and `declineHumanApproval()`.
+
+| Field             | Type                 | Description |
+|-------------------|----------------------|-------------|
+| `id`              | `string`             | UUID of the approval. |
+| `policy_id`       | `string`             | Policy that triggered the escalation. |
+| `organization_id` | `string`             | Your organization ID. |
+| `status`          | `HumanApprovalStatus`| `PENDING`, `ALLOWED`, or `DECLINED`. |
+| `request`         | `any` (optional)     | Request payload associated with the approval. |
+| `response`        | `any` (optional)     | Response payload. |
+| `action_by`       | `string` (optional)   | ID of user who approved/declined. |
+| `action_by_user`  | `ActionByUser` (optional) | User details. |
+| `created_at`      | `string`             | ISO 8601 timestamp. |
+| `updated_at`      | `string`             | ISO 8601 timestamp. |
+
+### ActionByUser
+
+| Field         | Type     |
+|---------------|----------|
+| `id`          | `string` |
+| `first_name`  | `string` |
+| `last_name`   | `string` |
+| `email`       | `string` |
+
+### HumanApprovalStatus (enum)
+
+- `PENDING`
+- `ALLOWED`
+- `DECLINED`
+
+---
+
+## Complete example
+
+```typescript
+import { Limits, HumanApprovalStatus } from '@limits/sdk';
+
+const limits = new Limits({ apiKey: process.env.LIMITS_API_KEY! });
 
 // Check a policy that might escalate
-const decision = await limits.checkConditions('sensitive-action', {
+const result = await limits.check('sensitive-action', {
   amount: 10000,
   currency: 'USD',
 });
 
-if (decision.isEscalated) {
+if (result.isEscalated) {
   console.log('Action escalated, waiting for approval...');
-  
-  // List pending approvals
+
   const approvals = await limits.listHumanApprovals();
-  const pending = approvals.find(a => a.status === 'PENDING');
-  
+  const pending = approvals.find((a) => a.status === HumanApprovalStatus.PENDING);
+
   if (pending) {
-    // In a real application, you might wait for user input
-    // For this example, we'll approve it
     const approved = await limits.approveHumanApproval(pending.id);
     console.log(`Approval ${approved.id} has been approved`);
   }
 }
 ```
 
-## Error Handling
+---
+
+## Error handling
 
 The SDK validates UUID format for approval IDs:
 
@@ -125,14 +177,30 @@ try {
 }
 ```
 
+---
+
+## API summary
+
+| Method                         | Description |
+|--------------------------------|-------------|
+| `limits.listHumanApprovals()`  | List human approvals. Returns `HumanApproval[]`. |
+| `limits.approveHumanApproval(id)` | Approve by UUID. Returns `HumanApproval`. |
+| `limits.declineHumanApproval(id)` | Decline by UUID. Returns `HumanApproval`. |
+| `limits.getBaseUrl()`          | Returns `"https://api.limits.dev/api"`. |
+
+**REST**
+
+- List: `GET .../human-approvals`
+- Approve: `POST .../human-approvals/approve` body `{ "id": "<uuid>" }`
+- Decline: `POST .../human-approvals/decline` body `{ "id": "<uuid>" }`
+
 ## Next Steps
 
 <CardGroup cols={2}>
   <Card title="Policies" icon="shield" href="/sdk/policies">
-    Learn how policies can escalate to human approval.
+    How policies escalate to human approval.
   </Card>
   <Card title="Platform Approvals" icon="layout" href="/platform/approvals">
-    Manage approvals through the web interface.
+    Manage approvals in the web interface.
   </Card>
 </CardGroup>
-

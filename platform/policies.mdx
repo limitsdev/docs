@@ -3,150 +3,111 @@ title: "Policies"
 description: "Create, manage, and deploy policies through the platform UI"
 ---
 
-Policies are the core of the Limits platform. They define rules that determine how requests are processed.
+Policies are the core of the Limits platform. They define rules that determine whether each request is **allowed**, **blocked**, or **escalated** to human approval. You create policies from the **New Policy** button, choose **Conditions** or **Instructions** mode, and the AI Assistant generates the policy. You then edit, simulate, deploy, and manage all policies from the **Policies** page.
 
-## Policy Overview and Concepts
+## How the platform flow works
 
-A policy consists of:
+Creating and managing a policy follows this flow:
 
-- **Policy Key**: Unique identifier for the policy
-- **Tags**: Labels for organizing and categorizing policies
-- **Status**: Active or Inactive
-- **Default Action**: What happens when no conditions match (Allow, Block, or Escalate)
-- **Conditions**: Rules that determine when to apply specific actions
-- **Locks**: Rate limiting and time-based restrictions
-- **Notifications**: Alerts sent when actions are taken
+1. **Trigger** — Click **New Policy** (in the page header), describe your policy in natural language, choose **Conditions** or **Instructions** mode, and submit.
+2. **Assistant** — You are taken to the Assistant page (`/assistant/conditions` or `/assistant/instructions`). The AI streams: *Processing your request → Analyzing requirements → Generating policy configuration → Finalizing*. When done, you see the **Results area** (left) and **Simulation sidebar** (right).
+3. **Result by mode** — What you see in the policy tabs depends on the mode you chose:
+   - **Conditions mode** — Allow / Block / Escalate tabs with structured rules (CEL and condition builder).
+   - **Instructions mode** — An Instructions tab with natural language. Same options for notifications.
+4. **Edit, simulate, deploy** — You can edit the policy (key, tags, default action, conditions or instructions), run **Simulation** with a JSON payload, and **Deploy** (or rely on auto-save) to save the policy.
+5. **Policies list** — Open **Policies** from the sidebar to see all policies in a table: search by key, filter by status, and edit or delete.
 
-## Creating Policies via AI Assistant
+<Card title="Instructions vs Conditions" icon="lightbulb" href="/platform/instructions-vs-conditions">
+  When to use Conditions mode vs Instructions mode.
+</Card>
 
-The easiest way to create a policy is using the AI Assistant:
+## Creating a policy (New Policy)
 
-1. Navigate to the Assistant page (accessible from the sidebar or by going to `/assistant`)
-2. Enter your policy requirements in natural language
-3. The AI will process your request and generate a policy configuration
-4. Review and refine the generated policy
-5. Deploy the policy when ready
+### Step 1: Open the Create Policy dialog
 
-**Example queries:**
-- "Block all transactions over $10,000"
-- "Allow up to 5 requests per hour per user"
-- "Escalate requests from high-risk users for manual review"
+- From the **Policies** page (or any page that shows the header with **New Policy**), click **New Policy**.
+- A dialog opens with a text area and a mode selector.
+
+### Step 2: Describe your policy and choose mode
+
+- **Describe** your policy in plain language (e.g. *"Limit Stripe payments to $1000 per day"* or *"Allow maximum 100 API requests per minute"*).
+- **Choose mode:** **Conditions** (structured rules) or **Instructions** (natural language). You cannot mix both in one policy.
+- **Submit** with Enter or the arrow button.
+
+### Step 3: Assistant generates the policy
+
+- You are navigated to **`/assistant/conditions`** or **`/assistant/instructions`** depending on your choice.
+- The Assistant streams four steps: *Processing your request* → *Analyzing requirements* → *Generating policy configuration* → *Finalizing*.
+- When streaming finishes, the view switches to a **split layout**:
+  - **Left (Results area):** Policy header (status, deploy), policy config (key, tags, default action), **policy tabs** (content depends on mode), use cases, and simulation.
+  - **Right:** Simulation sidebar (chat + payload editor + run simulation + history).
+
+### Step 4: Review and refine
+
+- **Conditions mode:** Edit the Allow / Block / Escalate tabs (CEL, condition builder), add notifications per action.
+- **Instructions mode:** Edit the natural-language instructions in the Instructions tab; same notifications.
+- Use **Simulation** to send a test payload and see allow/block/escalate (or error). Adjust the policy as needed.
+- Click **Deploy** (or **Update**) to save. The policy is stored and appears on the Policies page.
 
 <Card title="AI Assistant" icon="sparkles" href="/platform/ai-assistant">
-  Learn more about creating policies with AI
+  How the Assistant works and how to refine policies.
 </Card>
 
-## Policy Editing
+## Policy structure (what you edit)
 
-Policies can be edited in two modes:
+Every policy has:
 
-### Conditions Mode
-
-Visual condition builder for creating policies:
-
-- Build conditions using a visual interface
-- Select field paths, operators, and values
-- Combine conditions with logical operators
-- See real-time CEL expression generation
-
-### Instructions Mode
-
-Natural language input for policy creation:
-
-- Describe policies in plain English
-- AI generates the policy configuration
-- Continue conversation to refine the policy
-
-## Policy Structure
-
-### Policy Key and Tags
-
-- **Policy Key**: Must be unique across your organization
-- **Tags**: Add multiple tags to organize policies (e.g., "payment", "fraud-prevention", "high-priority")
-
-### Default Action
-
-When no conditions match, the default action is applied:
-
-- **ALLOW**: Request is approved
-- **BLOCK**: Request is rejected
-- **ESCALATE**: Request is sent for human approval
-
-### Condition Logic (CEL Expressions)
-
-Policies use CEL (Common Expression Language) for condition evaluation:
-
-- Conditions are evaluated against incoming request payloads
-- Multiple conditions can be combined with logical operators
-- Each action (Allow, Block, Escalate) can have its own set of conditions
+| Element | Description |
+|--------|-------------|
+| **Policy key** | Unique identifier (e.g. `amount-minimum-usd`). Required. |
+| **Tags** | Labels for organizing (e.g. `payment`, `fraud-prevention`). |
+| **Status** | **Active** (enforcing) or **Inactive** (disabled). |
+| **Default action** | When no condition matches: **Allow**, **Block**, or **Escalate**. |
+| **Policy tabs** | **Conditions mode:** Allow / Block / Escalate tabs with CEL and condition builder. **Instructions mode:** Instructions tab with natural language. |
+| **Notifications** (optional) | Webhooks (and Slack when available) per action. See [Notifications](/platform/notifications). |
 
 <Card title="Policy Conditions" icon="code" href="/platform/policy-conditions">
-  Learn about building conditions
+  Building conditions (field paths, operators, CEL).
 </Card>
 
-### Lock Mechanisms
+## Policies page (`/policies`)
 
-Three types of locks can be applied:
+The Policies page is your list and management surface for all policies.
 
-1. **Limit Lock**: Rate limiting based on count or budget
-2. **Time Window Lock**: Restrict actions to specific days and times
-3. **Velocity Lock**: Detect rapid request patterns
+### Header
 
-<Card title="Policy Locks" icon="lock" href="/platform/policy-locks">
-  Learn about configuring locks
-</Card>
+- **Title:** Policies.
+- **New Policy** button — Opens the same Create Policy dialog (describe + mode → Assistant flow).
 
-### Notifications
+### Table
 
-Configure notifications for each action:
+- **Columns:** Key, Status, Tags, Default Action, Requires Human Review, Created, Last Updated, Actions (edit, delete).
+- **Search:** By policy key (debounced).
+- **Filter:** Status = All | Active | Inactive.
+- **Pagination:** Page index and page size (e.g. 10 per page).
 
-- **Slack**: Send notifications to Slack channels
-- **Webhooks**: Send HTTP requests to configured endpoints
+### Row actions
 
-<Card title="Notifications" icon="bell" href="/platform/notifications">
-  Learn about setting up notifications
-</Card>
+- **Edit** — Opens the policy edit page (`/policies/{id}/edit`) with the same mode (conditions or instructions) the policy was created with.
+- **Delete** — Removes the policy (with confirmation if your app uses it).
+- **Edit tags** — Update tags inline or in a dialog.
 
-## Policy Status
+## Summary: from Create Policy to Policies list
 
-- **Active**: Policy is currently enforcing rules
-- **Inactive**: Policy is disabled and not evaluating requests
-
-Toggle policy status from the policy editor or policies list.
-
-## Policy Deployment
-
-After creating or editing a policy:
-
-1. Review all settings (conditions, locks, notifications)
-2. Test the policy using the simulation feature
-3. Click "Deploy" to save and activate the policy
-4. The policy will immediately start evaluating requests
-
-<Card title="Policy Simulation" icon="flask" href="/platform/simulation">
-  Learn about testing policies
-</Card>
-
-## Policy Search and Filtering
-
-On the Policies page, you can:
-
-- **Search by key**: Use the search box to find policies by their key
-- **Filter by status**: Show only active or inactive policies
-- **Clear filters**: Reset all filters to view all policies
-
-## Policy Pagination
-
-- Policies are paginated for better performance
-- Default page size is 10 policies per page
-- Navigate between pages using pagination controls
-- Adjust page size if needed
+| Step | Where | What you do | Result |
+|------|--------|-------------|--------|
+| 1 | Page header | Click **New Policy**, describe policy, choose **Conditions** or **Instructions**, submit | Dialog closes; navigate to `/assistant/conditions` or `/assistant/instructions` |
+| 2 | Assistant page | (Automatic) Your description is sent to the Assistant | Streaming steps → policy config + message |
+| 3 | Assistant page | Wait for stream to finish | Split view: Results area (left) + Simulation sidebar (right) |
+| 4 | Results area | View/edit by mode | **Conditions:** Allow/Block/Escalate CEL + notifications. **Instructions:** Natural language + same options |
+| 5 | Results area | Deploy/Update, Simulate, generate use cases | Policy saved; simulation runs; templates for payloads |
+| 6 | Policies page | Open from sidebar or after saving | Table of policies; search, filter, edit, delete |
 
 <CardGroup cols={2}>
   <Card title="AI Assistant" icon="sparkles" href="/platform/ai-assistant">
-    Create policies with AI
+    Create and refine policies with AI
   </Card>
   <Card title="SDK Reference" icon="code" href="/sdk/policies">
-    Use policies programmatically
+    Evaluate policies with the SDK
   </Card>
 </CardGroup>

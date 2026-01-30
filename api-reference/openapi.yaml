@@ -1,0 +1,207 @@
+openapi: 3.0.1
+info:
+  title: Limits API
+  description: API for policy evaluation and human approval workflows.
+  version: 1.0.0
+servers:
+  - url: https://api.limits.dev
+security:
+  - bearerAuth: []
+paths:
+  /api/policies/{policyKey}/evaluate:
+    post:
+      summary: Evaluate policy
+      description: |
+        Evaluate a policy against the provided request payload. The body can include `request` (structured data for condition evaluation), `response`, and/or `text` (for LLM-based policies).
+        Returns the evaluation result with action (ALLOW, BLOCK, or ESCALATE), success status, and details.
+      operationId: evaluatePolicy
+      parameters:
+        - name: policyKey
+          in: path
+          description: The unique key of the policy to evaluate (e.g. `amount-minimum-usd`).
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                request:
+                  type: object
+                  description: Structured data for condition evaluation (e.g. amount, currency, user fields).
+                response:
+                  type: object
+                  description: Optional response context.
+                text:
+                  type: string
+                  description: Text for LLM-based policy evaluation (e.g. agent response to check).
+      responses:
+        '200':
+          description: Policy evaluation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyEvaluationResult'
+  /api/human-approvals:
+    get:
+      summary: List human approvals
+      description: |
+        Get all human approval requests for your organization. Use this to list pending, accepted, and declined approvals.
+      operationId: listHumanApprovals
+      responses:
+        '200':
+          description: List of human approval requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HumanApproval'
+  /api/human-approvals/{policyId}:
+    get:
+      summary: Get human approvals by policy
+      description: Get human approval requests filtered by policy ID for your organization.
+      operationId: getHumanApprovalsByPolicyId
+      parameters:
+        - name: policyId
+          in: path
+          description: The policy ID that triggered the approval requests.
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of human approval requests for the policy
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HumanApproval'
+  /api/human-approvals/approve:
+    post:
+      summary: Approve human approval
+      description: Approve a pending human approval request by ID. The request will be processed as allowed.
+      operationId: approveHumanApproval
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveHumanApprovalDto'
+      responses:
+        '200':
+          description: Updated approval object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HumanApproval'
+  /api/human-approvals/decline:
+    post:
+      summary: Decline human approval
+      description: Decline a pending human approval request by ID. The request will be processed as blocked.
+      operationId: declineHumanApproval
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclineHumanApprovalDto'
+      responses:
+        '200':
+          description: Updated approval object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HumanApproval'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Your API key. Get it from the [API Keys](/platform/api-keys) page in the dashboard.
+  schemas:
+    PolicyEvaluationResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the evaluation completed successfully.
+        enforcement:
+          type: string
+          enum: [CEL, LLM, HYBRID]
+          description: How the policy was enforced.
+        violated:
+          type: boolean
+          description: Whether the policy was violated.
+        action:
+          type: string
+          enum: [ALLOW, BLOCK, ESCALATE]
+          description: The resulting action.
+        message:
+          type: string
+          description: Human-readable reason or message.
+        details:
+          type: object
+          description: Additional evaluation details (e.g. condition result, LLM result).
+        error:
+          type: string
+          description: Error message if success is false.
+    HumanApproval:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        policy_id:
+          type: string
+        organization_id:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, ALLOWED, DECLINED]
+        request:
+          type: object
+        response:
+          type: object
+        action_by:
+          type: string
+        action_by_user:
+          $ref: '#/components/schemas/ActionByUser'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ActionByUser:
+      type: object
+      properties:
+        id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+    ApproveHumanApprovalDto:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The approval request ID to approve.
+    DeclineHumanApprovalDto:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The approval request ID to decline.

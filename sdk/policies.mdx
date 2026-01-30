@@ -1,109 +1,209 @@
 ---
 title: "Policies"
-description: "Evaluate policies with structured data or interaction text"
+description: "Evaluate policies with check() — conditions or interaction text"
 ---
 
-Policies are deterministic rules that govern what actions your agents can perform. The Limits SDK provides two methods for checking policies: `checkConditions()` for structured data and `checkInteractions()` for text-based interactions.
+The Limits SDK uses a single method, **`check(policyKey, input)`**, to evaluate policies. The same method handles:
 
-## Checking Conditions
+1. **Structured conditions** — pass an object (e.g. `amount`, `currency`).
+2. **Interaction text** — pass a string (e.g. LLM or agent response to be checked).
 
-Use `checkConditions()` when you have structured data to evaluate:
+## Method: `check(policyKey, input)`
+
+**Signature**
 
 ```typescript
-const decision = await limits.checkConditions('amount-minimum-usd', {
+async check(
+  policyKey: string,
+  input: Record<string, unknown> | string
+): Promise<PolicyEvaluationResult>
+```
+
+| Parameter   | Type                                | Required | Description |
+|------------|--------------------------------------|----------|-------------|
+| `policyKey`| `string`                             | **Yes**  | Policy identifier (e.g. `amount-minimum-usd`, `interaction-amount-minimum-usd`). Non-empty. |
+| `input`    | `Record<string, unknown>` or `string`| **Yes**  | Either a **conditions object** or **interaction text**. |
+
+**Returns:** `Promise<PolicyEvaluationResult>`. See [Response shape](#policy-evaluation-result) below.
+
+**Throws**
+
+- `InvalidPolicyKeyError` — empty or invalid `policyKey`.
+- `InvalidInputError` — empty object, empty string, or invalid type.
+- `APIRequestError` — API returned 4xx/5xx.
+- `NetworkError` — connection/DNS/network failure.
+
+---
+
+## Using `check` with conditions (object)
+
+Send a **non-empty object** as `input`. The SDK sends it as `request` in the body.
+
+```typescript
+const result = await limits.check('amount-minimum-usd', {
   amount: 500,
   currency: 'USD',
   customerId: 'cus_123',
 });
 
-if (decision.isBlocked) {
-  console.error('Policy blocked:', decision.data.reason);
-} else if (decision.isEscalated) {
-  console.warn('Policy escalated for review:', decision.data.reason);
-} else if (decision.isAllowed) {
-  console.log('Policy allowed:', decision.data.reason);
+if (result.isBlocked) {
+  console.error('Blocked:', result.data.reason);
+  if (result.errors?.length) {
+    result.errors.forEach((e) => console.error(' -', e));
+  }
+} else if (result.isEscalated) {
+  console.warn('Escalated:', result.data.reason);
+} else {
+  console.log('Allowed:', result.data.reason);
 }
 ```
 
-## Checking Interactions
+**Internal request**
 
-Use `checkInteractions()` when you need to evaluate text-based responses or LLM outputs:
+- **URL:** `POST https://api.limits.dev/api/policies/{policyKey}/evaluate`
+- **Body:** `{ "request": { ...your object } }`
+
+---
+
+## Using `check` with interaction text (string)
+
+Send a **non-empty string** (e.g. LLM/agent response). The SDK sends it as `response.text` in the body.
 
 ```typescript
-const decision = await limits.checkInteractions(
+const result = await limits.check(
   'block-amount-under-9000',
-  "Acknowledged. I tried to submit your payment for Order ORD-938271. Payment attempt ID PAY-4b72c1 was created at 2026-01-21 19:46:02 UTC. Amount received: 300.00 USD using method: card_visa_ending_1442."
+  'Acknowledged. I tried to submit your payment for Order ORD-938271. Amount received: 300.00 USD using method: card_visa_ending_1442.'
 );
 
-if (decision.isBlocked) {
-  console.error('Interaction blocked:', decision.data.reason);
+if (result.isBlocked) {
+  console.error('Interaction blocked:', result.data.reason);
 }
 ```
 
-## Policy Response
+**Internal request**
 
-Both methods return a `PolicyEvaluationResult`:
+- **URL:** `POST https://api.limits.dev/api/policies/{policyKey}/evaluate`
+- **Body:** `{ "response": { "text": "<your string>" } }`
 
-```typescript
-interface PolicyEvaluationResult {
-  data: {
-    action: 'allow' | 'block' | 'escalate';
-    reason: string;
-  };
-  isAllowed: boolean;    // Helper: data.action === 'allow'
-  isBlocked: boolean;    // Helper: data.action === 'block'
-  isEscalated: boolean;  // Helper: data.action === 'escalate'
-  errors?: string[];     // Validation errors (if any)
+---
+
+## Policy evaluation result
+
+`check()` returns a `PolicyEvaluationResult`:
+
+| Field          | Type     | Description |
+|----------------|----------|-------------|
+| `data`        | `object` | Always present. |
+| `data.action` | `'allow' \| 'block' \| 'escalate'` | Decision. |
+| `data.reason` | `string` | Human-readable reason. |
+| `isAllowed`   | `boolean`| `data.action === 'allow'`. |
+| `isBlocked`   | `boolean`| `data.action === 'block'`. |
+| `isEscalated` | `boolean`| `data.action === 'escalate'`. |
+| `errors`      | `string[] \| undefined` | Validation errors from the API (e.g. missing parameters). Present when the API returns `meta.errors`. |
+
+**Example (allowed)**
+
+```json
+{
+  "data": {
+    "action": "allow",
+    "reason": "Transaction amount is within allowed limits"
+  },
+  "isAllowed": true,
+  "isBlocked": false,
+  "isEscalated": false
 }
 ```
 
-## Handling Validation Errors
+**Example (blocked with validation errors)**
 
-When validation fails, the response includes an `errors` array:
-
-```typescript
-const decision = await limits.checkConditions('amount-minimum-usd', {
-  amount: 500,
-  // Missing required fields
-});
-
-if (decision.errors && decision.errors.length > 0) {
-  console.error('Validation errors:');
-  decision.errors.forEach((error, index) => {
-    console.error(`  ${index + 1}. ${error}`);
-  });
+```json
+{
+  "data": {
+    "action": "block",
+    "reason": "Parameter validation failed"
+  },
+  "isAllowed": false,
+  "isBlocked": true,
+  "isEscalated": false,
+  "errors": [
+    "Missing required parameter: 'currency' in request",
+    "Missing required parameter: 'customer_id' in request"
+  ]
 }
 ```
 
-## Error Handling
+---
 
-The SDK throws specific error types for different failure scenarios:
+## Error handling
+
+All SDK errors extend `LimitsSDKError`. Use `instanceof` for handling.
+
+| Error class             | When it is thrown |
+|-------------------------|--------------------|
+| `InvalidAPIKeyError`    | Invalid or missing API key (e.g. doesn't start with `sk_`). |
+| `InvalidPolicyKeyError` | Empty or invalid `policyKey` in `check()`. |
+| `InvalidInputError`     | Invalid `input` in `check()` (empty object/string) or invalid UUID in approve/decline. |
+| `APIRequestError`       | API returned 4xx or 5xx. |
+| `NetworkError`          | Connection/DNS/network failure. |
+| `TimeoutError`          | Request timeout (if used with custom fetch/timeout logic). |
+
+**APIRequestError** has: `message`, `statusCode?`, `response?` (API body: `{ statusCode, message }`).
 
 ```typescript
 import {
   Limits,
   APIRequestError,
   NetworkError,
-  InvalidAPIKeyError,
   InvalidPolicyKeyError,
   InvalidInputError,
 } from '@limits/sdk';
 
 try {
-  const decision = await limits.checkConditions('amount-minimum-usd', {
-    amount: 500,
-    currency: 'USD',
-  });
-} catch (error) {
-  if (error instanceof APIRequestError) {
-    console.error('API error:', error.message);
-    console.error('Status code:', error.statusCode);
-  } else if (error instanceof NetworkError) {
-    console.error('Network error:', error.message);
-  } else if (error instanceof InvalidPolicyKeyError) {
-    console.error('Invalid policy key');
-  } else if (error instanceof InvalidInputError) {
-    console.error('Invalid input:', error.message);
+  const result = await limits.check('amount-minimum-usd', { amount: 500, currency: 'USD' });
+  // use result
+} catch (err) {
+  if (err instanceof APIRequestError) {
+    console.error('API error', err.statusCode, err.response?.message ?? err.message);
+  } else if (err instanceof NetworkError) {
+    console.error('Network error', err.message, err.originalError);
+  } else if (err instanceof InvalidPolicyKeyError || err instanceof InvalidInputError) {
+    console.error('Invalid input:', err.message);
+  } else {
+    throw err;
+  }
+}
+```
+
+---
+
+## Full flow example
+
+```typescript
+import { Limits, APIRequestError, NetworkError } from '@limits/sdk';
+
+const limits = new Limits({ apiKey: process.env.LIMITS_API_KEY! });
+
+async function evaluateTransaction(amount: number, currency: string) {
+  try {
+    const result = await limits.check('amount-minimum-usd', { amount, currency });
+
+    if (result.isBlocked) {
+      console.error('Blocked:', result.data.reason);
+      if (result.errors?.length) result.errors.forEach((e) => console.error('  -', e));
+      return { allowed: false, reason: result.data.reason };
+    }
+
+    if (result.isEscalated) {
+      console.warn('Escalated for review:', result.data.reason);
+      return { allowed: 'review', reason: result.data.reason };
+    }
+
+    return { allowed: true, reason: result.data.reason };
+  } catch (e) {
+    if (e instanceof APIRequestError) console.error('API error', e.statusCode, e.message);
+    else if (e instanceof NetworkError) console.error('Network error', e.message);
+    throw e;
   }
 }
 ```
@@ -112,10 +212,9 @@ try {
 
 <CardGroup cols={2}>
   <Card title="Human Approvals" icon="user-check" href="/sdk/human-approvals">
-    Learn how to manage human approval workflows.
+    List, approve, and decline human approval requests.
   </Card>
   <Card title="Platform Policies" icon="layout" href="/platform/policies">
-    Create and manage policies through the web interface.
+    Create and manage policies in the web interface.
   </Card>
 </CardGroup>
-

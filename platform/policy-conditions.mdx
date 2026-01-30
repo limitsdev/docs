@@ -1,6 +1,6 @@
 ---
 title: "Policy Conditions"
-description: "Build conditions using operators, field paths, and CEL expressions"
+description: "Build conditions using operators, field paths, and condition expressions"
 ---
 
 Conditions determine when specific actions (Allow, Block, Escalate) are triggered.
@@ -68,15 +68,15 @@ When multiple conditions match, actions are prioritized:
 Block conditions are always evaluated first, regardless of the order they appear in the policy.
 </Warning>
 
-## CEL Expression Generation
+## Condition Expression Generation
 
-Conditions are automatically converted to CEL (Common Expression Language) expressions:
+Conditions are automatically converted to expressions:
 
-- The visual condition builder generates CEL expressions
-- You can view the generated CEL in the expression editor
-- CEL expressions are evaluated against request payloads
+- The visual condition builder generates condition expressions
+- You can view the generated expression in the expression editor
+- Condition expressions are evaluated against request payloads
 
-**Example CEL expression:**
+**Example condition expression:**
 ```
 request.amount > 1000 && user.risk_level == "high"
 ```

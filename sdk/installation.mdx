@@ -3,6 +3,22 @@ title: "Installation"
 description: "Install and configure the Limits SDK"
 ---
 
+## Overview
+
+The Limits SDK provides a type-safe interface to the Limits Policy Evaluation API. You can:
+
+- **Evaluate policies** with structured conditions (e.g. amount, currency) or with interaction text (e.g. LLM responses).
+- **List, approve, and decline** human approval requests for escalated policies.
+
+Authentication uses an API key (Bearer token). The SDK uses native `fetch` (Node.js 18+).
+
+## Requirements
+
+| Requirement | Version |
+|-------------|---------|
+| Node.js     | `>= 18.0.0` (for native `fetch`) |
+| TypeScript  | `>= 5.0` (optional, for types)   |
+
 ## Installation
 
 Install the Limits SDK using your preferred package manager:
@@ -21,30 +37,32 @@ pnpm add @limits/sdk
 ```
 </CodeGroup>
 
-<Warning>
-  The SDK requires Node.js 18+ for native `fetch` support.
-</Warning>
-
 ## Configuration
 
-Initialize the client with your API key:
+### Constructor: `new Limits(config)`
+
+Create a single client instance and reuse it for all calls.
+
+| Parameter        | Type      | Required | Description |
+|------------------|-----------|----------|-------------|
+| `config.apiKey`  | `string`  | **Yes**  | API key. Must start with `sk_`. |
+| `config.debug`   | `boolean` | No       | Enable `[LimitsSDK]` console logs. Default: `false`. |
+
+**Throws:** `InvalidAPIKeyError` if the key is missing, not a string, doesn't start with `sk_`, or is too short.
 
 ```typescript
-import { Limits } from "@limits/sdk";
+import { Limits } from '@limits/sdk';
 
 const limits = new Limits({
-  apiKey: process.env.LIMITS_API_KEY,
+  apiKey: process.env.LIMITS_API_KEY!,
+  debug: process.env.NODE_ENV === 'development',
 });
 ```
 
-### Configuration Options
+### Authentication
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `apiKey` | `string` | Required | Your Limits API key (must start with `sk_`) |
-| `debug` | `boolean` | `false` | Enable debug logging for troubleshooting |
-
-
+- Header: `Authorization: Bearer <apiKey>`
+- API keys must start with `sk_` and be valid in your Limits account.
 
 ## Get Your API Key
 
@@ -65,23 +83,25 @@ export LIMITS_API_KEY="sk_your_api_key_here"
 ## Quick Example
 
 ```typescript
-import { Limits } from "@limits/sdk";
+import { Limits } from '@limits/sdk';
 
 const limits = new Limits({
-  apiKey: process.env.LIMITS_API_KEY,
-  debug: true, // Optional: enable debug logging
+  apiKey: process.env.LIMITS_API_KEY!,
+  debug: true, // Optional: enable [LimitsSDK] logging
 });
 
-// Check conditions with structured data
-const decision = await limits.checkConditions('amount-minimum-usd', {
+// Check policy with structured data (conditions)
+const result = await limits.check('amount-minimum-usd', {
   amount: 500,
   currency: 'USD',
 });
 
-if (decision.isBlocked) {
-  console.error('Policy blocked:', decision.data.reason);
+if (result.isBlocked) {
+  console.error('Blocked:', result.data.reason);
+} else if (result.isEscalated) {
+  console.warn('Escalated:', result.data.reason);
 } else {
-  console.log('Policy allowed:', decision.data.reason);
+  console.log('Allowed:', result.data.reason);
 }
 ```
 
@@ -89,7 +109,7 @@ if (decision.isBlocked) {
 
 <CardGroup cols={2}>
   <Card title="Policies" icon="shield" href="/sdk/policies">
-    Learn how to check policies with structured data or text.
+    Evaluate policies with conditions or interaction text using <code>check()</code>.
   </Card>
   <Card title="API Keys" icon="key" href="/platform/api-keys">
     Generate API keys in the platform.

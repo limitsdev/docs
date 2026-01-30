@@ -1,0 +1,131 @@
+---
+title: "Instructions vs Conditions"
+description: "Two ways to define a policy: structured conditions or natural-language instructions"
+---
+
+Limits lets you **check (evaluate)** requests (for example, what your AI agent is about to do or has returned) and get back **allow**, **block**, or **escalate**. You use the Limits SDK or API in your app: you call with a policy key and a payload; Limits evaluates and returns the outcome.
+
+When you **define a policy** in the platform, you choose **one** of two modes: **Conditions** or **Instructions**. They are two different ways to define how that evaluation works. You do **not** use both in the same policy—each policy is either in Conditions mode or Instructions mode.
+
+## How you use Limits: check (evaluate) with the SDK
+
+In your application you call the Limits SDK to evaluate (check) a request. You pass the policy key and the request payload (e.g. amount, user, resource). Limits evaluates and returns **allow**, **block**, or **escalate**.
+
+<CodeGroup>
+```javascript JavaScript
+const decision = await limits.checkConditions('your-policy-key', {
+  amount: 100,
+  user: { risk_level: 'low' },
+});
+
+if (decision.isAllowed) console.log(' Allowed');
+if (decision.isBlocked) console.log(' Blocked');
+if (decision.isEscalated) console.log(' Escalated');
+```
+```typescript TypeScript
+const decision = await limits.checkConditions('your-policy-key', {
+  amount: 100,
+  user: { risk_level: 'low' },
+});
+
+if (decision.isAllowed) console.log('Allowed');
+if (decision.isBlocked) console.log(' Blocked');
+if (decision.isEscalated) console.log(' Escalated');
+```
+</CodeGroup>
+
+So the platform is for **checking/evaluating** the response or context from your AI agent (or any request you want to govern) and acting on the result: allow, block, or escalate.
+
+<Card title="Policies (SDK)" icon="code" href="/sdk/policies">
+  Check policies with structured data or text.
+</Card>
+
+## Quick difference between the two modes
+
+| | **Conditions mode** | **Instructions mode** |
+|--|---------------------|------------------------|
+| **Answers** | *When* or *if* something applies | *What* to do (required action or behavior) |
+| **Role** | Rules that decide allow / block / escalate | Tells the system what to do; used to evaluate and return allow / block / escalate |
+| **Format** | Structured rules (e.g. field, operator, value) | Natural language (text, bullets, steps) |
+
+- **Conditions** = "Under what circumstances does this apply?" — you define rules (e.g. "block if amount > 10000").
+- **Instructions** = "What should happen?" — you describe the required action or behavior in plain language.
+
+You pick **one** mode per policy. Conditions and instructions are not used together in the same policy.
+
+<img src="/images/instructions-vs-conditions-modes.png" alt="Conditions vs Instructions mode in the policy editor" />
+
+## Conditions mode: *When* or *if* something applies
+
+In **Conditions** mode you define **when** a request is allowed, blocked, or escalated using structured rules.
+
+You define things like:
+
+- Block **if** `request.amount > 10000`
+- Escalate **when** `user.risk_level == 'high'`
+- Allow **when** `request.resource` is in the allowed list
+
+So in Conditions mode you answer: **"When does this rule apply?"** or **"If this is true, what outcome?"**
+
+### Example (Conditions mode)
+
+Policy in Conditions mode: block high-value payments, escalate risky users.
+
+- **Block** when: `request.amount > 5000`
+- **Escalate** when: `user.risk_level == 'high'`
+- **Allow** when: neither of the above matches
+
+When you call the SDK with `{ amount: 100, user: { risk_level: 'low' } }`, Limits evaluates these rules and returns allow, block, or escalate.
+
+<Card title="Policy conditions" icon="code" href="/platform/policy-conditions">
+  Build conditions with operators and field paths.
+</Card>
+
+## Instructions mode: *What* to do
+
+In **Instructions** mode you describe **what** should happen—the required action or behavior—in natural language. The system uses that to evaluate requests and return allow, block, or escalate.
+
+You might write, for example:
+
+- "Block requests over $10,000."
+- "Escalate when the user is high risk."
+- "Allow only if the resource is in the approved list."
+
+So in Instructions mode you answer: **"What is the required action or behavior?"** in prose; the platform uses that to decide the outcome.
+
+### Example (Instructions mode)
+
+Policy in Instructions mode: you write instructions such as:
+
+- "Block any payment over $5,000."
+- "Escalate to human approval when risk level is high."
+- "Otherwise allow and log the request."
+
+When you call the SDK with a payload like `{ amount: 100 }`, Limits evaluates using these instructions and returns allow, block, or escalate.
+
+<Card title="AI Assistant" icon="sparkles" href="/platform/ai-assistant">
+  Create policies from natural language with the Assistant.
+</Card>
+
+## Summary
+
+- **How you use Limits:** Call the SDK or API to **check/evaluate** a request (e.g. from your AI agent); you get back **allow**, **block**, or **escalate**.
+- **Conditions mode** = *When* or *if* something applies. Structured rules that decide allow / block / escalate. One way to define a policy.
+- **Instructions mode** = *What* to do. Natural language that describes the required action or behavior; the system uses it to evaluate and return allow / block / escalate. A different way to define a policy.
+- You choose **one** mode per policy. Conditions and instructions are **not** used together in the same policy.
+
+## Where to edit in the platform
+
+- **Conditions mode** — **Policies** → select a policy → **Conditions** (or `/policies/[id]/edit/conditions`). Define when to allow, block, or escalate with the condition builder.
+- **Instructions mode** — **Policies** → select a policy → **Instructions** (or `/policies/[id]/edit/instructions`). Write what should happen in natural language.
+
+You can switch between the two **modes** from the policy edit page; each policy has one mode.
+
+<CardGroup cols={2}>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Create and manage policies.
+  </Card>
+  <Card title="Policy conditions" icon="code" href="/platform/policy-conditions">
+    Operators and field paths for conditions.
+  </Card>
+</CardGroup>
