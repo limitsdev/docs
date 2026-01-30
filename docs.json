@@ -3,9 +3,9 @@
   "theme": "almond",
   "name": "Limits.dev",
   "colors": {
-    "primary": "#000000",
-    "light": "#1F1F23",
-    "dark": "#000000"
+    "primary": "#343434",
+    "light": "#525252",
+    "dark": "#1a1a1a"
   },
   "favicon": "/favicon.svg",
   "styling": {
