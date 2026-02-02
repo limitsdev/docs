@@ -12,7 +12,7 @@ This documentation covers **Limits** (limits.dev), the AI policy layer for agent
 
 - **Policies**: Define when to allow, block, or escalate. Use the visual condition builder and/or the AI Assistant to generate from natural language.
 - **Outcomes**: Allow (permitted), Block (denied), Escalate (human approval in Approvals queue). Priority: Block > Escalate > Allow.
-- **SDK**: `limits.checkConditions()` and related calls from app code. See SDK docs (installation, policies, agents, escalations).
+- **SDK**: `limits.check()` and related calls from app code. See SDK docs (installation, policies, agents, escalations).
 - **API**: REST API for policy evaluation and escalation actions. See API Reference.
 - **Platform**: Dashboard, Policies, Logs, Approvals, API Keys, Integrations, Notifications.
 

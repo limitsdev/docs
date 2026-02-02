@@ -1,12 +1,12 @@
 ---
 title: "Policies"
-description: "Evaluate policies with check() — conditions or interaction text"
+description: "Evaluate policies with check() and evaluate()"
 ---
 
-The Limits SDK uses a single method, **`check(policyKey, input)`**, to evaluate policies. The same method handles:
+The Limits SDK provides two methods to evaluate policies:
 
-1. **Structured conditions** — pass an object (e.g. `amount`, `currency`).
-2. **Interaction text** — pass a string (e.g. LLM or agent response to be checked).
+1. **`check(policyKey, input)`** — for **Conditions mode** policies (structured data or interaction text).
+2. **`evaluate(policyKey, prompt, response)`** — for **Instructions mode** policies (AI agent responses against natural-language rules).
 
 ## Method: `check(policyKey, input)`
 
@@ -87,9 +87,58 @@ if (result.isBlocked) {
 
 ---
 
+## Method: `evaluate(policyKey, prompt, response)`
+
+Use `evaluate()` for **Instructions mode** policies. Pass the user's prompt and your AI agent's response. Limits evaluates the response against the natural-language instructions defined in your policy.
+
+**Signature**
+
+```typescript
+async evaluate(
+  policyKey: string,
+  prompt: string,
+  response: any
+): Promise<PolicyEvaluationResult>
+```
+
+| Parameter   | Type     | Required | Description |
+|-------------|----------|----------|-------------|
+| `policyKey` | `string` | **Yes**  | Policy identifier. |
+| `prompt`    | `string` | **Yes**  | The user's original prompt to your AI agent. |
+| `response`  | `any`    | **Yes**  | Your AI agent's response to be evaluated. |
+
+**Example**
+
+```typescript
+// User asks your AI agent to draft an email
+const prompt = 'Write a professional email to our client about the project delay';
+const agentResponse = {
+  text: 'Dear Client, I regret to inform you that our project timeline has shifted. We expect a 2-week delay due to unforeseen technical challenges. We apologize for any inconvenience.'
+};
+
+// Evaluate against policy instructions
+// (e.g., "Block if the email contains apologies or admits fault")
+const result = await limits.evaluate('email-compliance-policy', prompt, agentResponse);
+
+if (result.isBlocked) {
+  console.error('Response blocked:', result.data.reason);
+} else if (result.isEscalated) {
+  console.warn('Escalated for review:', result.data.reason);
+} else {
+  console.log('Allowed:', result.data.reason);
+}
+```
+
+**Internal request**
+
+- **URL:** `POST https://api.limits.dev/api/policies/{policyKey}/evaluate`
+- **Body:** `{ "text": "<prompt>", "response": <response> }`
+
+---
+
 ## Policy evaluation result
 
-`check()` returns a `PolicyEvaluationResult`:
+Both `check()` and `evaluate()` return a `PolicyEvaluationResult`:
 
 | Field          | Type     | Description |
 |----------------|----------|-------------|

@@ -17,6 +17,7 @@ yarn add @limits/sdk
 ```bash pnpm
 pnpm add @limits/sdk
 ```
+
 </CodeGroup>
 
 ## Initialize the Client
@@ -34,33 +35,33 @@ const limits = new Limits({
 Check policies with structured data:
 
 ```typescript
-const decision = await limits.checkConditions('amount-minimum-usd', {
+const decision = await limits.check("amount-minimum-usd", {
   amount: 500,
-  currency: 'USD',
-  customerId: 'cus_123',
+  currency: "USD",
+  customerId: "cus_123",
 });
 
 if (decision.isBlocked) {
-  console.error('Action blocked:', decision.data.reason);
+  console.error("Action blocked:", decision.data.reason);
   return;
 }
 
 // Proceed with the action
-console.log('Action allowed:', decision.data.reason);
+console.log("Action allowed:", decision.data.reason);
 ```
 
-## Check Interactions
+## Check Instructions
 
-Check policies with text-based interactions (e.g., LLM responses):
+Check policies with text-based Instructions (e.g., LLM responses):
 
 ```typescript
-const decision = await limits.checkInteractions(
-  'block-amount-under-9000',
-  "Acknowledged. I tried to submit your payment for Order ORD-938271..."
+const decision = await limits.checkInstructions(
+  "block-amount-under-9000",
+  "Acknowledged. I tried to submit your payment for Order ORD-938271...",
 );
 
 if (decision.isBlocked) {
-  console.error('Interaction blocked:', decision.data.reason);
+  console.error("Interaction blocked:", decision.data.reason);
 } else {
   // Proceed with the interaction
 }
@@ -77,23 +78,23 @@ const limits = new Limits({
 });
 
 // Check conditions
-const decision = await limits.checkConditions('amount-minimum-usd', {
+const decision = await limits.check("amount-minimum-usd", {
   amount: 500,
-  currency: 'USD',
+  currency: "USD",
 });
 
 // Use boolean helpers for cleaner conditionals
 if (decision.isBlocked) {
-  console.error('Blocked:', decision.data.reason);
+  console.error("Blocked:", decision.data.reason);
 } else if (decision.isEscalated) {
-  console.warn('Escalated:', decision.data.reason);
+  console.warn("Escalated:", decision.data.reason);
 } else if (decision.isAllowed) {
-  console.log('Allowed:', decision.data.reason);
+  console.log("Allowed:", decision.data.reason);
 }
 
 // Check for validation errors
 if (decision.errors && decision.errors.length > 0) {
-  decision.errors.forEach(error => console.error(`  - ${error}`));
+  decision.errors.forEach((error) => console.error(`  - ${error}`));
 }
 ```
 
