@@ -46,7 +46,7 @@
         "pages": [
           "sdk/installation",
           "sdk/policies",
-          "sdk/human-approvals",
+          "sdk/escalations",
           "sdk/reference"
         ]
       },
@@ -56,10 +56,10 @@
         "pages": [
           "api-reference/introduction",
           "api-reference/evaluate-policy",
-          "api-reference/list-human-approvals",
-          "api-reference/get-human-approvals-by-policy",
-          "api-reference/approve-human-approval",
-          "api-reference/decline-human-approval"
+          "api-reference/list-escalations",
+          "api-reference/get-escalations-by-policy",
+          "api-reference/approve-escalation",
+          "api-reference/decline-escalation"
         ]
       }
     ],
