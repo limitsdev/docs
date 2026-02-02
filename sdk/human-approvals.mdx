@@ -5,25 +5,25 @@ description: "List, approve, and decline human approval requests"
 
 When a policy evaluation returns **`escalate`**, it creates a human approval request. The SDK provides methods to list and resolve these approvals.
 
-## Method: `listHumanApprovals()`
+## Method: `listEscalations()`
 
 Returns all human approval records for your organization.
 
 **Signature**
 
 ```typescript
-async listHumanApprovals(): Promise<HumanApproval[]>
+async listEscalations(): Promise<Escalation[]>
 ```
 
-**Returns:** Array of [HumanApproval](#humanapproval-object) objects.
+**Returns:** Array of [Escalation](#escalation-object) objects.
 
 **Throws:** `APIRequestError`, `NetworkError`.
 
 ```typescript
-import { HumanApprovalStatus } from '@limits/sdk';
+import { EscalationStatus } from "@limits/sdk";
 
-const approvals = await limits.listHumanApprovals();
-const pending = approvals.filter((a) => a.status === HumanApprovalStatus.PENDING);
+const approvals = await limits.listEscalations();
+const pending = approvals.filter((a) => a.status === EscalationStatus.PENDING);
 
 for (const a of pending) {
   console.log(`Approval ${a.id} — policy ${a.policy_id} — ${a.status}`);
@@ -32,21 +32,21 @@ for (const a of pending) {
 
 ---
 
-## Method: `approveHumanApproval(id)`
+## Method: `approveEscalation(id)`
 
 Marks a human approval request as approved.
 
 **Signature**
 
 ```typescript
-async approveHumanApproval(id: string): Promise<HumanApproval>
+async approveEscalation(id: string): Promise<Escalation>
 ```
 
-| Parameter | Type     | Required | Description |
-|-----------|----------|----------|-------------|
+| Parameter | Type     | Required | Description                                                               |
+| --------- | -------- | -------- | ------------------------------------------------------------------------- |
 | `id`      | `string` | **Yes**  | UUID of the human approval (e.g. `123e4567-e89b-12d3-a456-426614174000`). |
 
-**Returns:** Updated [HumanApproval](#humanapproval-object) (e.g. `status: 'ALLOWED'`).
+**Returns:** Updated [Escalation](#escalation-object) (e.g. `status: 'ALLOWED'`).
 
 **Throws**
 
@@ -54,33 +54,37 @@ async approveHumanApproval(id: string): Promise<HumanApproval>
 - `APIRequestError`, `NetworkError`.
 
 ```typescript
-const updated = await limits.approveHumanApproval('123e4567-e89b-12d3-a456-426614174000');
-console.log('Approval status:', updated.status); // ALLOWED
+const updated = await limits.approveEscalation(
+  "123e4567-e89b-12d3-a456-426614174000",
+);
+console.log("Approval status:", updated.status); // ALLOWED
 ```
 
 ---
 
-## Method: `declineHumanApproval(id)`
+## Method: `declineEscalation(id)`
 
 Marks a human approval request as declined.
 
 **Signature**
 
 ```typescript
-async declineHumanApproval(id: string): Promise<HumanApproval>
+async declineEscalation(id: string): Promise<Escalation>
 ```
 
-| Parameter | Type     | Required | Description |
-|-----------|----------|----------|-------------|
+| Parameter | Type     | Required | Description                 |
+| --------- | -------- | -------- | --------------------------- |
 | `id`      | `string` | **Yes**  | UUID of the human approval. |
 
-**Returns:** Updated [HumanApproval](#humanapproval-object) (e.g. `status: 'DECLINED'`).
+**Returns:** Updated [Escalation](#escalation-object) (e.g. `status: 'DECLINED'`).
 
-**Throws:** Same as `approveHumanApproval(id)`.
+**Throws:** Same as `approveEscalation(id)`.
 
 ```typescript
-const updated = await limits.declineHumanApproval('123e4567-e89b-12d3-a456-426614174000');
-console.log('Approval status:', updated.status); // DECLINED
+const updated = await limits.declineEscalation(
+  "123e4567-e89b-12d3-a456-426614174000",
+);
+console.log("Approval status:", updated.status); // DECLINED
 ```
 
 ---
@@ -99,33 +103,33 @@ getBaseUrl(): string
 
 ---
 
-## HumanApproval object
+## Escalation object
 
-Returned by `listHumanApprovals()`, `approveHumanApproval()`, and `declineHumanApproval()`.
+Returned by `listEscalations()`, `approveEscalation()`, and `declineEscalation()`.
 
-| Field             | Type                 | Description |
-|-------------------|----------------------|-------------|
-| `id`              | `string`             | UUID of the approval. |
-| `policy_id`       | `string`             | Policy that triggered the escalation. |
-| `organization_id` | `string`             | Your organization ID. |
-| `status`          | `HumanApprovalStatus`| `PENDING`, `ALLOWED`, or `DECLINED`. |
-| `request`         | `any` (optional)     | Request payload associated with the approval. |
-| `response`        | `any` (optional)     | Response payload. |
-| `action_by`       | `string` (optional)   | ID of user who approved/declined. |
-| `action_by_user`  | `ActionByUser` (optional) | User details. |
-| `created_at`      | `string`             | ISO 8601 timestamp. |
-| `updated_at`      | `string`             | ISO 8601 timestamp. |
+| Field             | Type                      | Description                                   |
+| ----------------- | ------------------------- | --------------------------------------------- |
+| `id`              | `string`                  | UUID of the approval.                         |
+| `policy_id`       | `string`                  | Policy that triggered the escalation.         |
+| `organization_id` | `string`                  | Your organization ID.                         |
+| `status`          | `EscalationStatus`        | `PENDING`, `ALLOWED`, or `DECLINED`.          |
+| `request`         | `any` (optional)          | Request payload associated with the approval. |
+| `response`        | `any` (optional)          | Response payload.                             |
+| `action_by`       | `string` (optional)       | ID of user who approved/declined.             |
+| `action_by_user`  | `ActionByUser` (optional) | User details.                                 |
+| `created_at`      | `string`                  | ISO 8601 timestamp.                           |
+| `updated_at`      | `string`                  | ISO 8601 timestamp.                           |
 
 ### ActionByUser
 
-| Field         | Type     |
-|---------------|----------|
-| `id`          | `string` |
-| `first_name`  | `string` |
-| `last_name`   | `string` |
-| `email`       | `string` |
+| Field        | Type     |
+| ------------ | -------- |
+| `id`         | `string` |
+| `first_name` | `string` |
+| `last_name`  | `string` |
+| `email`      | `string` |
 
-### HumanApprovalStatus (enum)
+### EscalationStatus (enum)
 
 - `PENDING`
 - `ALLOWED`
@@ -136,24 +140,24 @@ Returned by `listHumanApprovals()`, `approveHumanApproval()`, and `declineHumanA
 ## Complete example
 
 ```typescript
-import { Limits, HumanApprovalStatus } from '@limits/sdk';
+import { Limits, EscalationStatus } from "@limits/sdk";
 
 const limits = new Limits({ apiKey: process.env.LIMITS_API_KEY! });
 
 // Check a policy that might escalate
-const result = await limits.check('sensitive-action', {
+const result = await limits.check("sensitive-action", {
   amount: 10000,
-  currency: 'USD',
+  currency: "USD",
 });
 
 if (result.isEscalated) {
-  console.log('Action escalated, waiting for approval...');
+  console.log("Action escalated, waiting for approval...");
 
-  const approvals = await limits.listHumanApprovals();
-  const pending = approvals.find((a) => a.status === HumanApprovalStatus.PENDING);
+  const approvals = await limits.listEscalations();
+  const pending = approvals.find((a) => a.status === EscalationStatus.PENDING);
 
   if (pending) {
-    const approved = await limits.approveHumanApproval(pending.id);
+    const approved = await limits.approveEscalation(pending.id);
     console.log(`Approval ${approved.id} has been approved`);
   }
 }
@@ -166,13 +170,13 @@ if (result.isEscalated) {
 The SDK validates UUID format for approval IDs:
 
 ```typescript
-import { InvalidInputError } from '@limits/sdk';
+import { InvalidInputError } from "@limits/sdk";
 
 try {
-  await limits.approveHumanApproval('invalid-uuid');
+  await limits.approveEscalation("invalid-uuid");
 } catch (error) {
   if (error instanceof InvalidInputError) {
-    console.error('Invalid approval ID format');
+    console.error("Invalid approval ID format");
   }
 }
 ```
@@ -181,18 +185,18 @@ try {
 
 ## API summary
 
-| Method                         | Description |
-|--------------------------------|-------------|
-| `limits.listHumanApprovals()`  | List human approvals. Returns `HumanApproval[]`. |
-| `limits.approveHumanApproval(id)` | Approve by UUID. Returns `HumanApproval`. |
-| `limits.declineHumanApproval(id)` | Decline by UUID. Returns `HumanApproval`. |
-| `limits.getBaseUrl()`          | Returns `"https://api.limits.dev/api"`. |
+| Method                         | Description                                      |
+| ------------------------------ | ------------------------------------------------ |
+| `limits.listEscalations()`     | List human approvals. Returns `Escalation[]`. |
+| `limits.approveEscalation(id)` | Approve by UUID. Returns `Escalation`.        |
+| `limits.declineEscalation(id)` | Decline by UUID. Returns `Escalation`.        |
+| `limits.getBaseUrl()`          | Returns `"https://api.limits.dev/api"`.          |
 
 **REST**
 
-- List: `GET .../human-approvals`
-- Approve: `POST .../human-approvals/approve` body `{ "id": "<uuid>" }`
-- Decline: `POST .../human-approvals/decline` body `{ "id": "<uuid>" }`
+- List: `GET .../escalations`
+- Approve: `POST .../escalations/approve` body `{ "id": "<uuid>" }`
+- Decline: `POST .../escalations/decline` body `{ "id": "<uuid>" }`
 
 ## Next Steps
 
