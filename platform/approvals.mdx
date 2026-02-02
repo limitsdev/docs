@@ -1,31 +1,31 @@
 ---
-title: "Approvals"
+title: "Escalations"
 description: "Manage human review workflows for escalated requests"
 ---
 
-The Approvals feature enables human review of requests that are escalated by policies.
+The Escalations feature enables human review of requests that are escalated by policies.
 
-## Approval Request Overview
+## Escalation Request Overview
 
 When a policy's escalate condition matches:
 
 1. The request is blocked from automatic processing
-2. An approval request is created
-3. The request appears in the Approvals page
+2. An escalation request is created
+3. The request appears in the Escalations page
 4. An authorized user can approve or decline the request
 
-## Viewing Pending Approvals
+## Viewing Pending Escalations
 
-The Approvals page shows:
+The Escalations page shows:
 
-- **ID**: Unique identifier for the approval request
+- **ID**: Unique identifier for the escalation request
 - **Policy ID**: Which policy triggered the escalation
 - **Created At**: When the approval request was created
 - **Status**: Pending, Accepted, or Declined
 - **Request**: Details of the original request (amount, currency, etc.)
 - **Action By**: User who approved or declined (if completed)
 
-## Approving or Declining Requests
+## Approving or Declining Escalations
 
 For pending requests:
 
@@ -38,9 +38,9 @@ For pending requests:
 Only pending requests can be approved or declined. Completed requests show their final status.
 </Info>
 
-## Approval Status Tracking
+## Escalation Status Tracking
 
-Approval statuses:
+Escalation statuses:
 
 - **PENDING**: Awaiting human review
 - **ACCEPTED**: Request was approved by a reviewer
@@ -51,7 +51,7 @@ Status badges are color-coded:
 - Accepted: Green with checkmark
 - Declined: Red with X icon
 
-## Understanding Approval Workflow
+## Understanding Escalation Workflow
 
 1. **Policy Evaluation**: Request matches escalate condition
 2. **Approval Request Created**: System creates approval request
@@ -63,7 +63,7 @@ Status badges are color-coded:
 
 ## Request Details
 
-Each approval request shows:
+Each escalation request shows:
 
 - **Request Amount**: Monetary value of the request
 - **Currency**: Currency code
@@ -75,7 +75,7 @@ Each approval request shows:
   <Card title="Policies" icon="shield" href="/platform/policies">
     Configure escalation conditions
   </Card>
-  <Card title="SDK Reference" icon="code" href="/sdk/human-approvals">
-    Manage approvals programmatically
+  <Card title="SDK Reference" icon="code" href="/sdk/escalations">
+    Manage escalations programmatically
   </Card>
 </CardGroup>

@@ -45,12 +45,12 @@ Add a new tab/section in `docs.json` for platform documentation, separate from S
    - Webhook configuration
    - *Source: Lines 726-787*
 
-6. **Approvals (Human Review)**
-   - Viewing pending approvals
+6. **Escalations (Human Review)**
+   - Viewing pending escalations
    - Approving/declining requests
    - Approval workflow
    - *Source: Lines 790-857*
-   - *Note: Complements SDK human-approvals.mdx*
+   - *Note: Complements SDK escalations.mdx*
 
 ### Medium Priority (Important but can be condensed)
 

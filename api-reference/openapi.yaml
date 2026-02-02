@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
   title: Limits API
-  description: API for policy evaluation and human approval workflows.
+  description: API for policy evaluation and escalation workflows.
   version: 1.0.0
 servers:
   - url: https://api.limits.dev
@@ -45,26 +45,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PolicyEvaluationResult'
-  /api/human-approvals:
+  /api/escalations:
     get:
-      summary: List human approvals
+      summary: List escalations
       description: |
-        Get all human approval requests for your organization. Use this to list pending, accepted, and declined approvals.
-      operationId: listHumanApprovals
+        Get all escalation requests for your organization. Use this to list pending, accepted, and declined escalations.
+      operationId: listEscalations
       responses:
         '200':
-          description: List of human approval requests
+          description: List of escalation requests
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HumanApproval'
-  /api/human-approvals/{policyId}:
+                  $ref: '#/components/schemas/Escalation'
+  /api/escalations/{policyId}:
     get:
-      summary: Get human approvals by policy
-      description: Get human approval requests filtered by policy ID for your organization.
-      operationId: getHumanApprovalsByPolicyId
+      summary: Get escalations by policy
+      description: Get escalation requests filtered by policy ID for your organization.
+      operationId: getEscalationsByPolicyId
       parameters:
         - name: policyId
           in: path
@@ -75,49 +75,49 @@ paths:
             format: uuid
       responses:
         '200':
-          description: List of human approval requests for the policy
+          description: List of escalation requests for the policy
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HumanApproval'
-  /api/human-approvals/approve:
+                  $ref: '#/components/schemas/Escalation'
+  /api/escalations/approve:
     post:
-      summary: Approve human approval
-      description: Approve a pending human approval request by ID. The request will be processed as allowed.
-      operationId: approveHumanApproval
+      summary: Approve escalation
+      description: Approve a pending escalation request by ID. The request will be processed as allowed.
+      operationId: approveEscalation
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApproveHumanApprovalDto'
+              $ref: '#/components/schemas/ApproveEscalationDto'
       responses:
         '200':
           description: Updated approval object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HumanApproval'
-  /api/human-approvals/decline:
+                $ref: '#/components/schemas/Escalation'
+  /api/escalations/decline:
     post:
-      summary: Decline human approval
-      description: Decline a pending human approval request by ID. The request will be processed as blocked.
-      operationId: declineHumanApproval
+      summary: Decline escalation
+      description: Decline a pending escalation request by ID. The request will be processed as blocked.
+      operationId: declineEscalation
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeclineHumanApprovalDto'
+              $ref: '#/components/schemas/DeclineEscalationDto'
       responses:
         '200':
           description: Updated approval object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HumanApproval'
+                $ref: '#/components/schemas/Escalation'
 components:
   securitySchemes:
     bearerAuth:
@@ -151,7 +151,7 @@ components:
         error:
           type: string
           description: Error message if success is false.
-    HumanApproval:
+    Escalation:
       type: object
       properties:
         id:
@@ -189,7 +189,7 @@ components:
           type: string
         email:
           type: string
-    ApproveHumanApprovalDto:
+    ApproveEscalationDto:
       type: object
       required: [id]
       properties:
@@ -197,7 +197,7 @@ components:
           type: string
           format: uuid
           description: The approval request ID to approve.
-    DeclineHumanApprovalDto:
+    DeclineEscalationDto:
       type: object
       required: [id]
       properties:
