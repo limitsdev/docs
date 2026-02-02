@@ -1,13 +1,13 @@
 ---
-title: "Human Approvals"
-description: "List, approve, and decline human approval requests"
+title: "Escalations"
+description: "List, approve, and decline escalation requests"
 ---
 
-When a policy evaluation returns **`escalate`**, it creates a human approval request. The SDK provides methods to list and resolve these approvals.
+When a policy evaluation returns **`escalate`**, it creates an escalation request. The SDK provides methods to list and resolve these escalations.
 
 ## Method: `listEscalations()`
 
-Returns all human approval records for your organization.
+Returns all escalation records for your organization.
 
 **Signature**
 
@@ -34,7 +34,7 @@ for (const a of pending) {
 
 ## Method: `approveEscalation(id)`
 
-Marks a human approval request as approved.
+Marks an escalation request as approved.
 
 **Signature**
 
@@ -44,7 +44,7 @@ async approveEscalation(id: string): Promise<Escalation>
 
 | Parameter | Type     | Required | Description                                                               |
 | --------- | -------- | -------- | ------------------------------------------------------------------------- |
-| `id`      | `string` | **Yes**  | UUID of the human approval (e.g. `123e4567-e89b-12d3-a456-426614174000`). |
+| `id`      | `string` | **Yes**  | UUID of the escalation (e.g. `123e4567-e89b-12d3-a456-426614174000`). |
 
 **Returns:** Updated [Escalation](#escalation-object) (e.g. `status: 'ALLOWED'`).
 
@@ -64,7 +64,7 @@ console.log("Approval status:", updated.status); // ALLOWED
 
 ## Method: `declineEscalation(id)`
 
-Marks a human approval request as declined.
+Marks an escalation request as declined.
 
 **Signature**
 
@@ -74,7 +74,7 @@ async declineEscalation(id: string): Promise<Escalation>
 
 | Parameter | Type     | Required | Description                 |
 | --------- | -------- | -------- | --------------------------- |
-| `id`      | `string` | **Yes**  | UUID of the human approval. |
+| `id`      | `string` | **Yes**  | UUID of the escalation. |
 
 **Returns:** Updated [Escalation](#escalation-object) (e.g. `status: 'DECLINED'`).
 
@@ -187,7 +187,7 @@ try {
 
 | Method                         | Description                                      |
 | ------------------------------ | ------------------------------------------------ |
-| `limits.listEscalations()`     | List human approvals. Returns `Escalation[]`. |
+| `limits.listEscalations()`     | List escalations. Returns `Escalation[]`. |
 | `limits.approveEscalation(id)` | Approve by UUID. Returns `Escalation`.        |
 | `limits.declineEscalation(id)` | Decline by UUID. Returns `Escalation`.        |
 | `limits.getBaseUrl()`          | Returns `"https://api.limits.dev/api"`.          |
