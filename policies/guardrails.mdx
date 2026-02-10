@@ -1,0 +1,145 @@
+---
+title: "Guardrails"
+description: "Content safety, PII, moderation, and filtering policies"
+---
+
+Guardrails policies evaluate **text** (e.g. model output or user messages) and return **allow**, **block**, or **escalate**. They are used for content safety, PII handling, moderation, and URL filtering — so you can mask or block sensitive or harmful content before it reaches users.
+
+## What guardrails are for
+
+- **Safety and moderation** — Block or flag hate speech, violence, sexual content, self-harm, illicit content.
+- **PII** — Mask or block personally identifiable information (email, phone, SSN, etc.) in text.
+- **Jailbreak and prompt injection** — Detect attempts to bypass or override model instructions.
+- **NSFW and URL filtering** — Filter not-safe-for-work content and control which URLs are allowed.
+
+Guardrails run **after** content is generated. You pass the text to the API or SDK; Limits evaluates it against your policy and returns allow, block, or escalate (and can return masked/redacted content when configured).
+
+## How guardrails work
+
+1. You create a **guardrails policy** in the platform (or via the Assistant) and enable the types you need (PII, moderation, jailbreak, etc.).
+2. For each piece of text (e.g. an LLM response), you call the API or SDK with the policy key and the text.
+3. Limits returns **allow**, **block**, or **escalate** and a reason. When PII masking is enabled, the response can include a sanitized version of the text.
+
+You configure **which** guardrail types are enabled and, for some (e.g. PII), whether to **mask** or **block** per entity.
+
+<Card title="Platform: Create guardrails" icon="layout" href="/platform/guardrails">
+  Create and configure guardrails in the Limits UI.
+</Card>
+
+---
+
+<span id="guardrail-types"></span>
+
+## Guardrail types
+
+Each type maps to a section in your policy. When you evaluate a guardrails policy, the text is checked against all enabled types. Use the links below to jump to a specific type.
+
+| Type | Anchor | Description |
+|------|--------|-------------|
+| [PII](#pii) | `#pii` | Personally identifiable information — mask or block. |
+| [Moderation](#moderation) | `#moderation` | Sexual content, hate, self-harm, violence, illicit. |
+| [Jailbreak](#jailbreak) | `#jailbreak` | Detects attempts to bypass model safety. |
+| [NSFW](#nsfw) | `#nsfw` | Not-safe-for-work content filter. |
+| [Prompt injection detection](#prompt_injection_detection) | `#prompt_injection_detection` | Detects instruction override in prompts. |
+| [URL filter](#url_filter) | `#url_filter` | Allow or block URLs by scheme and allow-list. |
+| [Output formatter](#output_formatter) | `#output_formatter` | Expected JSON structure for model output. |
+
+---
+
+<span id="pii"></span>
+
+### PII
+
+**Personally identifiable information (PII)** detects sensitive personal data in text (e.g. model output or user messages). For each entity (email, phone, SSN, credit card, etc.) you can choose:
+
+- **Mask** — Replace the value with a placeholder so the content can still be used without exposing PII.
+- **Block** — Reject the request or response so the PII is never returned.
+
+Entities are grouped by region (Common/global, USA, UK, Spain, Italy, and others). Enable only the types you need (e.g. email and phone for support chats, or SSN for compliance) and choose mask vs block per entity.
+
+---
+
+<span id="moderation"></span>
+
+### Moderation
+
+**Moderation** detects harmful or policy-violating content in text. Categories include:
+
+- **Sexual content** — Sexual or sexual/minors.
+- **Hate & harassment** — Hate, hate/threatening, harassment, harassment/threatening.
+- **Self-harm** — Self-harm, self-harm/intent, self-harm/instructions.
+- **Violence** — Violence, violence/graphic.
+- **Illicit activities** — Illicit, illicit/violent.
+
+When enabled, you select which categories to block. If the text matches any selected category, the guardrail returns block (or escalate, depending on your policy). Use this to keep model output and user content within your safety policy.
+
+---
+
+<span id="jailbreak"></span>
+
+### Jailbreak
+
+**Jailbreak** detection identifies attempts to bypass or override the model's safety instructions (e.g. "ignore previous rules" or crafted prompts that try to get the model to behave unsafely). When enabled, such attempts are detected and the guardrail can block or escalate the request. This is a single on/off switch; no per-category options.
+
+---
+
+<span id="nsfw"></span>
+
+### NSFW
+
+**NSFW (not-safe-for-work)** filters adult or not-safe-for-work content in requests and responses. When enabled, content that is classified as NSFW is filtered so you can block or escalate. Use this when you need to keep outputs appropriate for your audience (e.g. consumer apps or work contexts).
+
+---
+
+<span id="prompt_injection_detection"></span>
+
+### Prompt injection detection
+
+**Prompt injection detection** looks for attempts to inject or override instructions inside user prompts (e.g. hidden text that tells the model to ignore safety or leak data). When enabled, the guardrail flags such content so you can block or escalate. This complements **Jailbreak** (which focuses on bypassing safety) by focusing on instruction override in the prompt itself.
+
+---
+
+<span id="url_filter"></span>
+
+### URL filter
+
+**URL filter** controls which URLs are allowed in text. You configure:
+
+- **URL allow list** — Domains, IPs, or CIDR ranges that are permitted. Only URLs that match the allow list (and allowed schemes) pass.
+- **Allowed schemes** — e.g. `https` only; URLs with other schemes (e.g. `http`, `file`) can be blocked.
+- **Block user info** — Reject URLs that contain username/password segments (e.g. `https://user:pass@host.com`).
+- **Allow subdomains** — When enabled, subdomains of allowed domains are permitted (e.g. `api.example.com` if `example.com` is allowed).
+
+Use this to prevent model output or user content from exposing or linking to unsafe or disallowed URLs.
+
+---
+
+<span id="output_formatter"></span>
+
+### Output formatter
+
+**Output formatter** defines the expected JSON structure for model output. When enabled, you provide a JSON schema or template; the guardrail can validate that the model's response conforms to it (e.g. for structured APIs or downstream parsing). Invalid or non-conforming output can be flagged or blocked. This is useful when you need a fixed shape (for example, an object with `answer` and `confidence` fields) and want to catch malformed responses.
+
+---
+
+## Evaluating guardrails (SDK and API)
+
+- **SDK**: Use `limits.guard(policyKeyOrTag, input)` where `input` is the text string. See [SDK Guardrails](/sdk/guardrails).
+- **API**: `POST /api/policies/{policyKey}/evaluate/guardrails` with body `{ "request": { "input": "..." } }`. See [API Reference](/api-reference/evaluate-guardrails).
+
+You can use a **policy key** or a **tag**. With a tag, the strictest result across all matching policies wins: Block → Escalate → Allow.
+
+<CardGroup cols={2}>
+  <Card title="Conditions" icon="code" href="/policies/conditions">
+    Structured rules for allow/block/escalate.
+  </Card>
+  <Card title="Instructions" icon="file-text" href="/policies/instructions">
+    Natural-language policy definitions.
+  </Card>
+  <Card title="Platform: Guardrails" icon="layout" href="/platform/guardrails">
+    Create and edit guardrails in the UI.
+  </Card>
+  <Card title="SDK: guard()" icon="code" href="/sdk/guardrails">
+    Evaluate guardrails from your app.
+  </Card>
+</CardGroup>

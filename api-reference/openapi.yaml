@@ -1,43 +1,33 @@
 openapi: 3.0.1
 info:
   title: Limits API
-  description: API for policy evaluation and human approval workflows.
+  description: API for policy evaluation (conditions, instructions, guardrails) and escalations.
   version: 1.0.0
 servers:
   - url: https://api.limits.dev
 security:
   - bearerAuth: []
 paths:
-  /api/policies/{policyKey}/evaluate:
+  /api/policies/{policyKey}/evaluate/conditions:
     post:
-      summary: Evaluate policy
+      summary: Evaluate conditions policy
       description: |
-        Evaluate a policy against the provided request payload. The body can include `request` (structured data for condition evaluation), `response`, and/or `text` (for LLM-based policies).
-        Returns the evaluation result with action (ALLOW, BLOCK, or ESCALATE), success status, and details.
-      operationId: evaluatePolicy
+        Evaluate a **conditions** policy by key. Send structured input (e.g. amount, user, resource).
+        Returns the evaluation result with action (ALLOW, BLOCK, or ESCALATE), success status, and message.
+      operationId: evaluateConditions
       parameters:
         - name: policyKey
           in: path
-          description: The unique key of the policy to evaluate (e.g. `amount-minimum-usd`).
+          description: The policy key or tag (e.g. `amount-minimum-usd` or tag name).
           required: true
           schema:
             type: string
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                request:
-                  type: object
-                  description: Structured data for condition evaluation (e.g. amount, currency, user fields).
-                response:
-                  type: object
-                  description: Optional response context.
-                text:
-                  type: string
-                  description: Text for LLM-based policy evaluation (e.g. agent response to check).
+              $ref: '#/components/schemas/EvaluateConditionsRequest'
       responses:
         '200':
           description: Policy evaluation result
@@ -45,86 +35,176 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PolicyEvaluationResult'
-  /api/human-approvals:
-    get:
-      summary: List human approvals
+  /api/policies/{policyKey}/evaluate/instructions:
+    post:
+      summary: Evaluate instructions policy
       description: |
-        Get all human approval requests for your organization. Use this to list pending, accepted, and declined approvals.
-      operationId: listHumanApprovals
+        Evaluate an **instructions** policy by key. Send prompt and input (e.g. user prompt and LLM response).
+        Returns the evaluation result with action (ALLOW, BLOCK, or ESCALATE).
+      operationId: evaluateInstructions
+      parameters:
+        - name: policyKey
+          in: path
+          description: The policy key or tag.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateInstructionsRequest'
       responses:
         '200':
-          description: List of human approval requests
+          description: Policy evaluation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyEvaluationResult'
+  /api/policies/{policyKey}/evaluate/guardrails:
+    post:
+      summary: Evaluate guardrails policy
+      description: |
+        Evaluate a **guardrails** policy by key. Send the text to check (e.g. model output) as `request.input` (string).
+        Returns the evaluation result with action (ALLOW, BLOCK, or ESCALATE).
+      operationId: evaluateGuardrails
+      parameters:
+        - name: policyKey
+          in: path
+          description: The policy key or tag.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateGuardrailsRequest'
+      responses:
+        '200':
+          description: Policy evaluation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyEvaluationResult'
+  /api/escalations:
+    get:
+      summary: List escalations
+      description: |
+        Get all escalations for your organization. Returns pending, allowed, and declined escalations.
+      operationId: listEscalations
+      responses:
+        '200':
+          description: List of escalations
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HumanApproval'
-  /api/human-approvals/{policyId}:
+                  $ref: '#/components/schemas/Escalation'
+  /api/escalations/{policyId}:
     get:
-      summary: Get human approvals by policy
-      description: Get human approval requests filtered by policy ID for your organization.
-      operationId: getHumanApprovalsByPolicyId
+      summary: Get escalations by policy
+      description: Get escalation requests filtered by policy ID for your organization.
+      operationId: getEscalationsByPolicyId
       parameters:
         - name: policyId
           in: path
-          description: The policy ID that triggered the approval requests.
+          description: The policy ID that triggered the escalations.
           required: true
           schema:
             type: string
             format: uuid
       responses:
         '200':
-          description: List of human approval requests for the policy
+          description: List of escalations for the policy
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/HumanApproval'
-  /api/human-approvals/approve:
+                  $ref: '#/components/schemas/Escalation'
+  /api/escalations/approve:
     post:
-      summary: Approve human approval
-      description: Approve a pending human approval request by ID. The request will be processed as allowed.
-      operationId: approveHumanApproval
+      summary: Approve escalation
+      description: Approve a pending escalation by ID. The request will be processed as allowed.
+      operationId: approveEscalation
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ApproveHumanApprovalDto'
+              $ref: '#/components/schemas/ApproveEscalationDto'
       responses:
         '200':
-          description: Updated approval object
+          description: Updated escalation object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HumanApproval'
-  /api/human-approvals/decline:
+                $ref: '#/components/schemas/Escalation'
+  /api/escalations/decline:
     post:
-      summary: Decline human approval
-      description: Decline a pending human approval request by ID. The request will be processed as blocked.
-      operationId: declineHumanApproval
+      summary: Decline escalation
+      description: Decline a pending escalation by ID. The request will be processed as blocked.
+      operationId: declineEscalation
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DeclineHumanApprovalDto'
+              $ref: '#/components/schemas/DeclineEscalationDto'
       responses:
         '200':
-          description: Updated approval object
+          description: Updated escalation object
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HumanApproval'
+                $ref: '#/components/schemas/Escalation'
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: Your API key. Get it from the [API Keys](/platform/api-keys) page in the dashboard.
+      description: Your API key (starts with sk_). Get it from the API Keys page in the dashboard.
   schemas:
+    EvaluateConditionsRequest:
+      type: object
+      required: [request]
+      properties:
+        request:
+          type: object
+          required: [input]
+          properties:
+            input:
+              type: object
+              description: Structured data for condition evaluation (e.g. amount, currency, user fields).
+    EvaluateInstructionsRequest:
+      type: object
+      required: [request]
+      properties:
+        request:
+          type: object
+          required: [input]
+          properties:
+            prompt:
+              type: string
+              description: Optional user prompt.
+            input:
+              type: string
+              description: Input to evaluate (e.g. LLM response).
+    EvaluateGuardrailsRequest:
+      type: object
+      required: [request]
+      properties:
+        request:
+          type: object
+          required: [input]
+          properties:
+            input:
+              type: string
+              description: Text to check (e.g. model output or user message).
     PolicyEvaluationResult:
       type: object
       properties:
@@ -147,11 +227,11 @@ components:
           description: Human-readable reason or message.
         details:
           type: object
-          description: Additional evaluation details (e.g. condition result, LLM result).
+          description: Additional evaluation details.
         error:
           type: string
           description: Error message if success is false.
-    HumanApproval:
+    Escalation:
       type: object
       properties:
         id:
@@ -189,19 +269,19 @@ components:
           type: string
         email:
           type: string
-    ApproveHumanApprovalDto:
+    ApproveEscalationDto:
       type: object
       required: [id]
       properties:
         id:
           type: string
           format: uuid
-          description: The approval request ID to approve.
-    DeclineHumanApprovalDto:
+          description: The escalation ID to approve.
+    DeclineEscalationDto:
       type: object
       required: [id]
       properties:
         id:
           type: string
           format: uuid
-          description: The approval request ID to decline.
+          description: The escalation ID to decline.

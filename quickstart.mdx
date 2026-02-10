@@ -7,22 +7,22 @@ description: "Get started with Limits in under 5 minutes"
 
 <CodeGroup>
 ```bash npm
-npm install @limits/sdk
+npm install limit-js
 ```
 
 ```bash yarn
-yarn add @limits/sdk
+yarn add limit-js
 ```
 
 ```bash pnpm
-pnpm add @limits/sdk
+pnpm add limit-js
 ```
 </CodeGroup>
 
 ## Initialize the Client
 
 ```typescript
-import { Limits } from "@limits/sdk";
+import { Limits } from 'limit-js';
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY,
@@ -31,10 +31,10 @@ const limits = new Limits({
 
 ## Check Conditions
 
-Check policies with structured data:
+Check policies with structured data using `check()`:
 
 ```typescript
-const decision = await limits.checkConditions('amount-minimum-usd', {
+const decision = await limits.check('amount-minimum-usd', {
   amount: 500,
   currency: 'USD',
   customerId: 'cus_123',
@@ -49,51 +49,43 @@ if (decision.isBlocked) {
 console.log('Action allowed:', decision.data.reason);
 ```
 
-## Check Interactions
+## Evaluate Instructions or Guard Text
 
-Check policies with text-based interactions (e.g., LLM responses):
+- **Instructions** (prompt + LLM response): use `evaluate(policyKeyOrTag, prompt, response)`.
+- **Guardrails** (text only, e.g. safety/PII): use `guard(policyKeyOrTag, text)`.
 
 ```typescript
-const decision = await limits.checkInteractions(
-  'block-amount-under-9000',
-  "Acknowledged. I tried to submit your payment for Order ORD-938271..."
-);
-
+// Guardrails on model output
+const decision = await limits.guard('content-guardrail', modelOutput);
 if (decision.isBlocked) {
-  console.error('Interaction blocked:', decision.data.reason);
-} else {
-  // Proceed with the interaction
+  console.error('Blocked:', decision.data.reason);
 }
 ```
 
 ## Complete Example
 
 ```typescript
-import { Limits } from "@limits/sdk";
+import { Limits } from 'limit-js';
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY,
-  debug: true, // Optional: enable debug logging
 });
 
-// Check conditions
-const decision = await limits.checkConditions('amount-minimum-usd', {
+const decision = await limits.check('amount-minimum-usd', {
   amount: 500,
   currency: 'USD',
 });
 
-// Use boolean helpers for cleaner conditionals
 if (decision.isBlocked) {
   console.error('Blocked:', decision.data.reason);
 } else if (decision.isEscalated) {
   console.warn('Escalated:', decision.data.reason);
-} else if (decision.isAllowed) {
+} else {
   console.log('Allowed:', decision.data.reason);
 }
 
-// Check for validation errors
-if (decision.errors && decision.errors.length > 0) {
-  decision.errors.forEach(error => console.error(`  - ${error}`));
+if (decision.errors?.length) {
+  decision.errors.forEach((error) => console.error('  -', error));
 }
 ```
 
@@ -101,10 +93,10 @@ if (decision.errors && decision.errors.length > 0) {
 
 <CardGroup cols={2}>
   <Card title="Policies" icon="shield" href="/sdk/policies">
-    Learn how to check policies with structured data or text.
+    Use <code>check()</code>, <code>evaluate()</code>, and <code>guard()</code> for conditions, instructions, and guardrails.
   </Card>
-  <Card title="Human Approvals" icon="user-check" href="/sdk/human-approvals">
-    Manage human approval workflows.
+  <Card title="Escalations" icon="user-check" href="/sdk/human-approvals">
+    List and resolve escalations.
   </Card>
   <Card title="Platform Guide" icon="layout" href="/platform/getting-started">
     Learn how to use the Limits platform UI.

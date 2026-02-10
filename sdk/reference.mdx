@@ -1,73 +1,91 @@
 ---
 title: "Reference"
-description: "TypeScript types and API summary for @limits/sdk"
+description: "TypeScript types and API summary for limit-js"
 ---
 
 ## API Reference Summary
 
-| Method / constructor       | Description |
-|----------------------------|-------------|
-| `new Limits(config)`       | Create client. `config.apiKey` required, `config.debug` optional. |
-| `limits.check(policyKey, input)` | Evaluate policy. `input` = object (conditions) or string (interaction text). Returns `PolicyEvaluationResult`. |
-| `limits.listHumanApprovals()`    | List human approvals. Returns `HumanApproval[]`. |
-| `limits.approveHumanApproval(id)`| Approve by UUID. Returns `HumanApproval`. |
-| `limits.declineHumanApproval(id)`| Decline by UUID. Returns `HumanApproval`. |
-| `limits.getBaseUrl()`      | Returns `"https://api.limits.dev/api"`. |
+| Method / constructor | Description |
+|----------------------|-------------|
+| `new Limits(config)` | Create client. `config.apiKey` required (must start with `sk_`). |
+| `limits.check(policyKeyOrTag, input)` | Evaluate **conditions** policy. `input` = object. Returns `PolicyEvaluationResult`. |
+| `limits.evaluate(policyKeyOrTag, prompt, response)` | Evaluate **instructions** policy (prompt + LLM response). Returns `PolicyEvaluationResult`. |
+| `limits.guard(policyKeyOrTag, input)` | Evaluate **guardrails** policy. `input` = string. Returns `PolicyEvaluationResult`. |
+| `limits.listEscalations()` | List all escalations. Returns `Escalation[]`. |
+| `limits.listEscalationsByPolicyId(policyId)` | List escalations by policy. Returns `Escalation[]`. |
+| `limits.approveEscalation(escalationId)` | Approve escalation by ID. Returns `Escalation`. |
+| `limits.declineEscalation(escalationId)` | Decline escalation by ID. Returns `Escalation`. |
 
-### Policy evaluation
+### Policy key or tag
 
-- **Endpoint:** `POST https://api.limits.dev/api/policies/{policyKey}/evaluate`
-- **Conditions:** body `{ "request": { ... } }`
-- **Interaction text:** body `{ "response": { "text": "..." } }`
-- **Response:** SDK normalizes API `{ meta, data }` into `PolicyEvaluationResult` (with `data.action`, `data.reason`, `errors`, and `isAllowed` / `isBlocked` / `isEscalated`).
+For `check`, `evaluate`, and `guard` the first argument can be:
 
-### Human approvals
+- **Policy key** — e.g. `'amount-minimum-usd'`
+- **Tag** — e.g. `'#payments'`. All policies with that tag are evaluated; strictest result wins: BLOCK → ESCALATE → ALLOW.
 
-- List: `GET .../human-approvals`
-- Approve: `POST .../human-approvals/approve` body `{ "id": "<uuid>" }`
-- Decline: `POST .../human-approvals/decline` body `{ "id": "<uuid>" }`
+### Result shape (all policy methods)
+
+```typescript
+{
+  data: { action: 'ALLOW' | 'BLOCK' | 'ESCALATE'; reason: string };
+  isAllowed: boolean;
+  isBlocked: boolean;
+  isEscalated: boolean;
+  errors?: string[];
+}
+```
 
 ---
 
 ## TypeScript types
 
-Import types and enums for type safety:
+Import types for type safety:
 
 ```typescript
 import {
   Limits,
   type PolicyEvaluationResult,
-  type SDKConfig,
-  type HumanApproval,
-  type ActionByUser,
-  HumanApprovalStatus,
-} from '@limits/sdk';
+  type Escalation,
+  type EscalationResponse,
+} from 'limit-js';
 ```
 
 ### Exported types
 
 | Type | Description |
 |------|-------------|
-| `PolicyEnforcement` | `'CEL' \| 'LLM' \| 'HYBRID'` |
-| `PolicyAction` | `'block' \| 'allow' \| 'escalate'` |
-| `EvaluatePolicyInput` | Internal body shape (`request` / `response` / `text`) |
-| `LLMResult`, `PolicyEvaluationDetails` | Evaluation details |
-| `PolicyEvaluationResult` | Return type of `check()` |
-| `SDKConfig` | Constructor config |
-| `APIErrorResponse` | `{ statusCode, message }` |
-| `HumanApproval`, `ActionByUser` | Human approval shapes |
-| `HumanApprovalStatus` | Enum: `PENDING`, `ALLOWED`, `DECLINED` |
+| `PolicyEvaluationResult` | Return type of `check()`, `evaluate()`, `guard()` — `data`, `isAllowed`, `isBlocked`, `isEscalated`, `errors?`. |
+| `Escalation` | Escalation object: `id`, `policy_id`, `organization_id`, `status`, `request?`, `response?`, `action_by?`, `created_at`, `updated_at`. |
+| `EscalationResponse` | Policy result at time of escalation: `action`, `message`, `success`, `violated`. |
 
-### Exported errors
+---
+
+## Errors
 
 | Error | When |
 |-------|------|
-| `LimitsSDKError` | Base class for all SDK errors |
-| `InvalidAPIKeyError` | Invalid or missing API key |
-| `InvalidPolicyKeyError` | Empty or invalid `policyKey` in `check()` |
-| `InvalidInputError` | Invalid `input` in `check()` or invalid UUID in approve/decline |
-| `APIRequestError` | API returned 4xx/5xx |
-| `NetworkError` | Connection/DNS/network failure |
-| `TimeoutError` | Request timeout (if used with custom fetch/timeout logic) |
+| `InvalidAPIKeyError` | Key missing or doesn't start with `sk_`. |
+| `InvalidPolicyKeyError` | Policy key/tag empty or invalid. |
+| `InvalidInputError` | Empty input where required. |
+| `APIRequestError` | API returned 4xx/5xx (`error.statusCode`, `error.response`). |
+| `NetworkError` / `TimeoutError` | Request failed or timed out. |
 
-All errors extend `LimitsSDKError`. Use `instanceof` for handling.
+Use `instanceof` for handling:
+
+```typescript
+import { Limits, InvalidAPIKeyError, APIRequestError } from 'limit-js';
+
+try {
+  const decision = await limits.check('my-policy', { amount: 100 });
+} catch (err) {
+  if (err instanceof InvalidAPIKeyError) { /* ... */ }
+  if (err instanceof APIRequestError) { /* ... */ }
+  throw err;
+}
+```
+
+---
+
+## Auth
+
+Requests use `Authorization: Bearer <apiKey>`. Get an API key from the [Limits dashboard](https://app.limits.dev) (Dashboard → API keys).

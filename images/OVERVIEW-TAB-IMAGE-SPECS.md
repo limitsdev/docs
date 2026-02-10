@@ -128,7 +128,7 @@ Visual descriptions for each image so you (or a designer) can create or source t
 
 **How it should look:**
 
-- **Layout:** Cropped screenshot of the instructions text area with 2–3 bullet points or short sentences (e.g. "Block any payment over $5,000.", "Escalate to human approval when risk level is high.").
+- **Layout:** Cropped screenshot of the instructions text area with 2–3 bullet points or short sentences (e.g. "Block any payment over $5,000.", "Escalate when risk level is high.").
 - **Content:** Plain text / rich text area; no code. Should feel "natural language" not "condition builder."
 - **Style:** Real UI, same product look as conditions-builder.
 - **Dimensions:** e.g. 700×280 px.
@@ -145,12 +145,12 @@ Visual descriptions for each image so you (or a designer) can create or source t
 
 **How it should look:**
 
-- **Layout:** Terminal/console window: one command (`npm install @limits/sdk` or `yarn add @limits/sdk`) and the success output (package name, version, "added 1 package" or similar).
+- **Layout:** Terminal/console window: one command (`npm install limit-js` or `yarn add limit-js`) and the success output (package name, version, "added 1 package" or similar).
 - **Content:** No sensitive paths; generic project folder name (e.g. `my-app`). Optional: cursor on next line to suggest "ready for next step."
 - **Style:** Common terminal look (dark background, green/white text, or your doc’s code-block style). Rounded window frame is optional.
 - **Dimensions:** e.g. 800×220 px.
 
-**One-line brief:** "Terminal showing npm/yarn install @limits/sdk and success message."
+**One-line brief:** "Terminal showing npm/yarn install limit-js and success message."
 
 ---
 

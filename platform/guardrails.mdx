@@ -1,0 +1,104 @@
+---
+title: "Guardrails"
+description: "Create and manage guardrails policies for content safety and PII"
+---
+
+Guardrails are a **policy mode** in Limits that evaluate **text** (e.g. model output or user messages) for safety, PII, moderation, jailbreak detection, and URL filtering. You define a guardrails policy in the platform, then evaluate it with the SDK **`guard()`** or the API so that content is allowed, blocked, or escalated before it reaches users.
+
+## What guardrails cover
+
+| Category | Description |
+|----------|-------------|
+| **PII** | Mask or block personally identifiable information (email, phone, SSN, credit card, location, etc.) in text. |
+| **Moderation** | Sexual content, hate/harassment, self-harm, violence, illicit activities. |
+| **Jailbreak** | Detection of attempts to bypass system instructions. |
+| **NSFW** | Not-safe-for-work content filtering. |
+| **Prompt injection** | Detection of prompt injection in user or model content. |
+| **URL filter** | Allow or block URLs by scheme and allow-list. |
+
+You create and edit guardrails in the platform via the **Guardrail** flow or the AI Assistant.
+
+<Card title="Policies: Guardrails" icon="shield" href="/policies/guardrails">
+  Full guide to guardrail types (PII, moderation, etc.).
+</Card>
+<Card title="SDK: guard()" icon="code" href="/sdk/guardrails">
+  Evaluate guardrails from your app.
+</Card>
+
+---
+
+## How to create a guardrails policy
+
+1. From the **Policies** page (or any header with **New Policy**), click **New Policy**.
+2. In the dialog, **describe** your guardrails in plain language (e.g. *"Mask email and phone numbers, block hate speech"*).
+3. Choose **Guardrail** as the mode (alongside Conditions and Instructions).
+4. Submit. You are taken to **`/assistant/guardrail`** where the AI Assistant generates the guardrails configuration.
+5. When streaming finishes, you see the **Results area** and **Simulation** sidebar. Adjust which guardrails are enabled (PII, moderation, etc.), run simulation with sample text, then **Deploy** to save.
+
+---
+
+## Policy structure (guardrails)
+
+Every guardrails policy has:
+
+| Element | Description |
+|--------|-------------|
+| **Policy key** | Unique identifier (e.g. `content-guardrail`). Required. |
+| **Tags** | Optional labels (e.g. `safety`, `pii`). |
+| **Status** | **Active** (enforcing) or **Inactive** (disabled). |
+
+You configure which guardrails are enabled (PII mask/block, moderation, jailbreak, NSFW, prompt injection, URL filter) in the Guardrail editor.
+
+---
+
+## Editing a guardrails policy
+
+1. Open **Policies** from the sidebar.
+2. Find the policy (filter or search by key). Guardrail policies show mode **Guardrail**.
+3. Click **Edit**. You are taken to **`/policies/[id]/edit/guardrail`**.
+4. Edit which guardrails are enabled (PII types, moderation categories, etc.), run **Simulation** with sample text to test, then save (**Deploy** / **Update**).
+
+You can also **edit tags** and **status** (Active/Inactive) from the policy row or the edit page.
+
+---
+
+## Simulation
+
+Use **Simulation** to test a guardrails policy before or after deploying:
+
+1. On the policy edit page (**Guardrail** tab), open the **Simulation** sidebar.
+2. Enter **sample text** (e.g. a model response or user message that might contain PII or unsafe content).
+3. Run the simulation. The result shows **allow**, **block**, or **escalate** and the reason.
+
+This helps you verify that PII is masked or blocked and that moderation rules behave as expected.
+
+---
+
+## Where guardrails appear in the platform
+
+| Location | What you do |
+|----------|-------------|
+| **Policies** | List all policies; guardrail policies have mode Guardrail. Edit, delete, or change status/tags. |
+| **New Policy** | Create a new policy; choose **Guardrail** mode and describe intent → you are taken to the Assistant to generate your guardrails. |
+| **Policy edit → Guardrail** (`/policies/[id]/edit/guardrail`) | Edit your guardrails settings, simulate, and deploy. |
+
+---
+
+## Summary
+
+- **Guardrails** = policy mode that evaluates **text** for PII, moderation, jailbreak, NSFW, prompt injection, and URL rules.
+- **Create:** New Policy → Guardrail + describe → Assistant generates configuration → Deploy.
+- **Edit:** Policies → select policy → Edit → Guardrail tab; adjust your guardrails and simulate.
+- **Use in app:** SDK `guard(policyKeyOrTag, text)` or API `POST /api/policies/:key/evaluate/guardrails`. See [SDK Guardrails](/sdk/guardrails).
+
+<CardGroup cols={2}>
+  <Card title="SDK Guardrails" icon="code" href="/sdk/guardrails">
+    Use <code>guard()</code> to evaluate guardrails in your app.
+  </Card>
+  <Card title="Policies" icon="shield" href="/platform/policies">
+    Create and manage all policy types.
+  </Card>
+  <Card title="AI Assistant" icon="sparkles" href="/platform/ai-assistant">
+    Generate policies with natural language.
+  </Card>
+</CardGroup>

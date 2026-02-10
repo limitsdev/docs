@@ -3,7 +3,7 @@ title: "Overview"
 description: "Governing AI and agent requests with one policy layer"
 ---
 
-Limits is a platform for **governing AI and agent requests** in your applications. You define policies that decide, for each request, whether to **allow**, **block**, or **escalate** to human approval—so agents and LLMs stay within the rules you set, without hard-coding logic in every service.
+Limits is a platform for **governing AI and agent requests** in your applications. You define policies that decide, for each request, whether to **allow**, **block**, or **escalate**—so agents and LLMs stay within the rules you set, without hard-coding logic in every service.
 
 <img src="/images/overview-hero.png" alt="Limits: one policy layer for allow, block, escalate" />
 
@@ -13,7 +13,7 @@ Building with AI and agents introduces risks that are hard to manage with code a
 
 - **Agents and LLMs can take actions** that shouldn't be allowed—spend, data access, or out-of-scope operations—without a central place to enforce rules.
 - **Hard-coding rules in application code** is brittle, doesn't scale across teams or products, and mixes business policy with implementation.
-- **Manual review doesn't scale**; you need consistent, automated policy enforcement with the option to escalate to humans when it matters.
+- **Manual review doesn't scale**; you need consistent, automated policy enforcement with the option to escalate when it matters.
 - **Visibility is missing**: what was allowed, what was blocked, what needed approval, and why.
 - **API, SDK, and backend services** need the same policy layer so behavior is consistent everywhere.
 
@@ -29,7 +29,7 @@ Requests from your stack (API, SDK, agents, webhooks, or manual triggers) hit th
 
 Policies live in the Limits platform. You describe **when** to allow, block, or escalate using **conditions** (e.g. request amount, user risk, resource type), and optionally **instructions** that guide the system. You can start from natural language in the **Assistant** ("Block requests over $10,000" or "Escalate when risk is high"), then refine in the visual editor—no need to hand-write policy logic in every service.
 
-Policies are evaluated for every request; the outcome is **allow**, **block**, or **escalate** to human approval.
+Policies are evaluated for every request; the outcome is **allow**, **block**, or **escalate**.
 
 ### Three outcomes: Allow, Block, Escalate
 
@@ -39,7 +39,7 @@ Every request is evaluated against your policies:
 | -------- | ------- |
 | **Allow** | The request is permitted. |
 | **Block** | The request is denied. |
-| **Escalate** | The request is sent to human approval; you decide in the **Approvals** queue. |
+| **Escalate** | The request is escalated; you decide in the **Approvals** queue. |
 
 **Priority:** Block overrides Escalate, Escalate overrides Allow. You define conditions in the visual condition builder.
 
@@ -71,8 +71,8 @@ You control the logic: simple rules, conditional workflows, or complex multi-ste
 
 **Conditional workflow:**
 
-- If `user.risk_level == 'high'`: escalate to human approval.
-- If `request.amount > 5000`: escalate to human approval.
+- If `user.risk_level == 'high'`: escalate.
+- If `request.amount > 5000`: escalate.
 - Otherwise: allow.
 
 You define the conditions and instructions; Limits evaluates every request and returns allow, block, or escalate—and logs it all.
@@ -80,7 +80,7 @@ You define the conditions and instructions; Limits evaluates every request and r
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Instructions vs Conditions" icon="lightbulb" href="/platform/instructions-vs-conditions">
+  <Card title="Instructions vs Conditions" icon="lightbulb" href="/policies/instructions-vs-conditions">
     When to use Conditions mode vs Instructions mode for policies.
   </Card>
   <Card title="Quickstart" icon="rocket" href="/quickstart">
