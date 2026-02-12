@@ -5,7 +5,11 @@ description: "Install and configure the Limits SDK"
 
 ## Overview
 
-The Limits SDK (**limit-js**) provides a type-safe interface to the Limits Policy API. You can:
+The Limits SDK (**limit-js**) provides a type-safe interface to the Limits Policy API. Your application triggers evaluation via the SDK; the SDK sends requests to the Limits API and returns allow, block, or escalate decisions.
+
+<img src="/images/sdk-flow-diagram.png" alt="SDK flow: trigger events (check, evaluate, guard, escalations) and Limits SDK ↔ Limits API" />
+
+You can:
 
 - **Check conditions** — evaluate policies with structured input (e.g. amount, currency).
 - **Evaluate instructions** — validate prompt + LLM response (e.g. in middleware).
