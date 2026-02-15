@@ -35,6 +35,15 @@ Create and manage API keys in the [Platform API Keys](/platform/api-keys) page.
 
 Use the **Policy evaluation** and **Escalations** sections in the sidebar to open each endpoint’s reference: parameters, request/response schemas, and examples.
 
+## Policy evaluation responses
+
+The three policy evaluation endpoints (conditions, instructions, guardrails) return the same response shape: an envelope with **`meta`** and **`result`**.
+
+- **meta** — `code` (HTTP status), `message`, `errors` (array of validation or evaluation messages when present).
+- **result** — `violated` (boolean), `decision` (ALLOW, BLOCK, or ESCALATE), `reason` (optional), `key` (policy key evaluated).
+
+See [Evaluate conditions](/api-reference/evaluate-conditions), [Evaluate instructions](/api-reference/evaluate-instructions), or [Evaluate guardrails](/api-reference/evaluate-guardrails) for the full schema and examples.
+
 <Card title="SDK Reference" icon="code" href="/sdk/installation">
-  For a better developer experience, use our SDK instead of raw API calls.
+  For a better developer experience, use our SDK instead of raw API calls. The SDK normalizes the API response to a simple result shape.
 </Card>

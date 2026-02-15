@@ -21,7 +21,7 @@ The Approvals page shows:
 - **ID**: Unique identifier for the approval request
 - **Policy ID**: Which policy triggered the escalation
 - **Created At**: When the approval request was created
-- **Status**: Pending, Accepted, or Declined
+- **Status**: Pending, Allowed, or Declined (API/SDK use `PENDING`, `ALLOWED`, `DECLINED`)
 - **Request**: Details of the original request (amount, currency, etc.)
 - **Action By**: User who approved or declined (if completed)
 
@@ -40,15 +40,15 @@ Only pending requests can be approved or declined. Completed requests show their
 
 ## Approval Status Tracking
 
-Approval statuses:
+Approval statuses (same in API and SDK):
 
 - **PENDING**: Awaiting review
-- **ACCEPTED**: Request was approved by a reviewer
+- **ALLOWED**: Request was approved by a reviewer (the UI may show this as "Accepted")
 - **DECLINED**: Request was declined by a reviewer
 
 Status badges are color-coded:
 - Pending: Gray with clock icon
-- Accepted: Green with checkmark
+- Allowed (Accepted): Green with checkmark
 - Declined: Red with X icon
 
 ## Understanding Approval Workflow

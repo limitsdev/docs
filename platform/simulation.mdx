@@ -3,14 +3,26 @@ title: "Policy Simulation"
 description: "Test policies with sample payloads before deployment"
 ---
 
-Test policies before deployment to ensure they work as expected.
+Test policies before deployment to ensure they work as expected. Simulation is **mode-specific**: the Simulate tab uses the same mode as the policy (Conditions, Instructions, or Guardrails), and the payload shape and evaluation result format depend on that mode.
 
 ## Testing Policies with Sample Payloads
 
 1. Open a policy in the editor
 2. Navigate to the "Simulate" tab in the right sidebar
-3. Enter a sample payload (JSON format)
+3. Enter a sample payload (format depends on policy mode — see below)
 4. Click "Evaluate" to see how the policy processes the payload
+
+## Mode-specific payloads
+
+The Simulate tab sends the payload to the backend based on the policy type. Use the shape that matches your mode:
+
+| Mode | Payload shape | Example |
+|------|----------------|---------|
+| **Conditions** | Structured object (e.g. `request`, `user`) | `{ "request": { "amount": 5000, "currency": "USD" }, "user": { "id": "user-123", "risk_level": "high" } }` |
+| **Instructions** | Prompt plus response (or input) | `{ "prompt": "User question...", "input": "LLM response text..." }` — the field names may match the Instructions evaluate API. |
+| **Guardrails** | Text to check | A string or object with a single text field (e.g. the model output or user message to scan). |
+
+The evaluation trace and result (decision, reason, matched rules) may vary by mode; for example, Conditions show structured condition evaluation, while Guardrails show which guardrail type triggered.
 
 ## Quick Test Templates
 
@@ -23,7 +35,7 @@ The simulator provides quick templates for common scenarios:
 
 ## Custom Payload Input
 
-Enter any JSON payload to test:
+Enter a payload that matches your policy mode. For **Conditions**, a typical payload is a JSON object with `request` and optional `user` (or other fields your conditions reference):
 
 ```json
 {
@@ -38,6 +50,8 @@ Enter any JSON payload to test:
   }
 }
 ```
+
+For **Instructions** or **Guardrails**, use the prompt/input or text shape described in the table above.
 
 ## Evaluation Trace Visualization
 

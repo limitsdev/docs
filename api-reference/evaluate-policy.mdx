@@ -11,7 +11,7 @@ The API provides three evaluation endpoints, one per policy mode:
 | [POST /api/policies/{policyKey}/evaluate/instructions](/api-reference/evaluate-instructions) | Instructions | `request.prompt`, `request.input` (string) | Prompt + LLM response validation. |
 | [POST /api/policies/{policyKey}/evaluate/guardrails](/api-reference/evaluate-guardrails) | Guardrails | `request.input` (string) | Text safety, PII, moderation. |
 
-All three return the same shape: `action` (ALLOW, BLOCK, or ESCALATE), `success`, `message`, and optional `details` or `error`.
+All three return the same response shape: an envelope with `meta` (code, message, errors) and `result` (violated, decision, reason, key).
 
 <CardGroup cols={2}>
   <Card title="Evaluate conditions" icon="code" href="/api-reference/evaluate-conditions">

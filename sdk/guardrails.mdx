@@ -98,7 +98,7 @@ app.post('/chat', async (req, res) => {
 
 ## Result shape
 
-`guard()` returns the same `PolicyEvaluationResult` as `check()` and `evaluate()`:
+The API returns a response with `meta` and `result`; the SDK normalizes this to the `PolicyEvaluationResult` shape below. `guard()` returns the same `PolicyEvaluationResult` as `check()` and `evaluate()`:
 
 ```typescript
 {

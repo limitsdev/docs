@@ -4,4 +4,28 @@ description: "Evaluate a guardrails policy on text"
 openapi: "api-reference/openapi.yaml POST /api/policies/{policyKey}/evaluate/guardrails"
 ---
 
-Evaluates a **guardrails** policy by key. Send a JSON body with `request.input` as a string (the text to check, e.g. model output or user message). The API returns the evaluation result with `action` (ALLOW, BLOCK, or ESCALATE), `success`, and `message`.
+Evaluates a **guardrails** policy by key. Send a JSON body with `request.input` as a string (the text to check, e.g. model output or user message). The API returns an envelope with `meta` (code, message, errors) and `result` (violated, decision, reason, key).
+
+**Response shape**
+
+- `meta.code` — HTTP status code
+- `meta.message` — Status message (e.g. Success, Policy evaluation failed)
+- `meta.errors` — Array of validation or evaluation error messages when present
+- `result.violated` — Whether the policy was violated
+- `result.decision` — ALLOW, BLOCK, or ESCALATE
+- `result.reason` — Human-readable reason (optional)
+- `result.key` — Policy key that was evaluated
+
+**Example response**
+
+```json
+{
+  "meta": { "code": 200, "message": "Success", "errors": [] },
+  "result": {
+    "violated": false,
+    "decision": "ALLOW",
+    "reason": "Content passed guardrails",
+    "key": "content-guardrail"
+  }
+}
+```

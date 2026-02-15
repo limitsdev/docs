@@ -7,9 +7,9 @@ description: "TypeScript types and API summary for @limits/js"
 
 | Method / constructor | Description |
 |----------------------|-------------|
-| `new Limits(config)` | Create client. `config.apiKey` required (must start with `sk_`). |
+| `new Limits(config)` | Create client. `config.apiKey` required (must start with `sk_`). Optional: `config.debug` (boolean) for request/response logging. |
 | `limits.check(policyKeyOrTag, input)` | Evaluate **conditions** policy. `input` = object. Returns `PolicyEvaluationResult`. |
-| `limits.evaluate(policyKeyOrTag, prompt, response)` | Evaluate **instructions** policy (prompt + LLM response). Returns `PolicyEvaluationResult`. |
+| `limits.evaluate(policyKeyOrTag, prompt, response)` | Evaluate **instructions** policy (prompt + LLM response). `response` can be a string or object. Returns `PolicyEvaluationResult`. |
 | `limits.guard(policyKeyOrTag, input)` | Evaluate **guardrails** policy. `input` = string. Returns `PolicyEvaluationResult`. |
 | `limits.listEscalations()` | List all escalations. Returns `Escalation[]`. |
 | `limits.listEscalationsByPolicyId(policyId)` | List escalations by policy. Returns `Escalation[]`. |
@@ -25,15 +25,24 @@ For `check`, `evaluate`, and `guard` the first argument can be:
 
 ### Result shape (all policy methods)
 
+The API returns a response with `meta` and `result`; the SDK normalizes this to the `PolicyEvaluationResult` shape below. When the API returns validation or evaluation errors, they appear in `errors`.
+
 ```typescript
 {
   data: { action: 'ALLOW' | 'BLOCK' | 'ESCALATE'; reason: string };
   isAllowed: boolean;
   isBlocked: boolean;
   isEscalated: boolean;
-  errors?: string[];
+  errors?: string[];  // Present when validation or evaluation fails
 }
 ```
+
+### Configuration
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `config.apiKey` | `string` | **Yes** | API key (must start with `sk_`). |
+| `config.debug` | `boolean` | No | Set to `true` to enable request/response logging in the console. Default: `false`. |
 
 ---
 
@@ -47,6 +56,8 @@ import {
   type PolicyEvaluationResult,
   type Escalation,
   type EscalationResponse,
+  type EscalationStatus,
+  type ActionByUser,
 } from '@limits/js';
 ```
 
@@ -55,8 +66,10 @@ import {
 | Type | Description |
 |------|-------------|
 | `PolicyEvaluationResult` | Return type of `check()`, `evaluate()`, `guard()` — `data`, `isAllowed`, `isBlocked`, `isEscalated`, `errors?`. |
-| `Escalation` | Escalation object: `id`, `policy_id`, `organization_id`, `status`, `request?`, `response?`, `action_by?`, `created_at`, `updated_at`. |
+| `Escalation` | Escalation object: `id`, `policy_id`, `organization_id`, `status`, `request?`, `response?`, `action_by?`, `action_by_user?`, `created_at`, `updated_at`. |
 | `EscalationResponse` | Policy result at time of escalation: `action`, `message`, `success`, `violated`. |
+| `EscalationStatus` | Enum: `PENDING`, `ALLOWED`, `DECLINED` (for `Escalation.status`). |
+| `ActionByUser` | User who resolved the escalation: `id`, `first_name`, `last_name`, `email` (present on `Escalation.action_by_user` when resolved). |
 
 ---
 

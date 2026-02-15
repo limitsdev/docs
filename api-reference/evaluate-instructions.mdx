@@ -4,4 +4,28 @@ description: "Evaluate an instructions policy with prompt and input"
 openapi: "api-reference/openapi.yaml POST /api/policies/{policyKey}/evaluate/instructions"
 ---
 
-Evaluates an **instructions** policy by key. Send a JSON body with `request.prompt` (optional) and `request.input` (string, e.g. LLM response). The API returns the evaluation result with `action` (ALLOW, BLOCK, or ESCALATE), `success`, and `message`.
+Evaluates an **instructions** policy by key. Send a JSON body with `request.prompt` (optional) and `request.input` (string, e.g. LLM response). The API returns an envelope with `meta` (code, message, errors) and `result` (violated, decision, reason, key).
+
+**Response shape**
+
+- `meta.code` — HTTP status code
+- `meta.message` — Status message (e.g. Success, Policy evaluation failed)
+- `meta.errors` — Array of validation or evaluation error messages when present
+- `result.violated` — Whether the policy was violated
+- `result.decision` — ALLOW, BLOCK, or ESCALATE
+- `result.reason` — Human-readable reason (optional)
+- `result.key` — Policy key that was evaluated
+
+**Example response**
+
+```json
+{
+  "meta": { "code": 200, "message": "Success", "errors": [] },
+  "result": {
+    "violated": false,
+    "decision": "ALLOW",
+    "reason": "Response complies with instructions",
+    "key": "refund-policy"
+  }
+}
+```

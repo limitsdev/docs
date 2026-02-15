@@ -105,7 +105,7 @@ const decision = await limits.guard('#safety', modelOutput);
 
 ## Result shape
 
-All three methods return a `PolicyEvaluationResult`:
+The API returns a response with `meta` and `result`; the SDK normalizes this to the `PolicyEvaluationResult` shape below. All three methods return a `PolicyEvaluationResult`:
 
 ```typescript
 {

@@ -207,30 +207,40 @@ components:
               description: Text to check (e.g. model output or user message).
     PolicyEvaluationResult:
       type: object
+      required: [meta, result]
       properties:
-        success:
-          type: boolean
-          description: Whether the evaluation completed successfully.
-        enforcement:
-          type: string
-          enum: [CEL, LLM, HYBRID]
-          description: How the policy was enforced.
-        violated:
-          type: boolean
-          description: Whether the policy was violated.
-        action:
-          type: string
-          enum: [ALLOW, BLOCK, ESCALATE]
-          description: The resulting action.
-        message:
-          type: string
-          description: Human-readable reason or message.
-        details:
+        meta:
           type: object
-          description: Additional evaluation details.
-        error:
-          type: string
-          description: Error message if success is false.
+          required: [code, message, errors]
+          properties:
+            code:
+              type: integer
+              description: HTTP status code.
+            message:
+              type: string
+              description: Status message (e.g. Success, Policy evaluation failed).
+            errors:
+              type: array
+              items:
+                type: string
+              description: Validation or evaluation error messages when present.
+        result:
+          type: object
+          required: [violated, decision, key]
+          properties:
+            violated:
+              type: boolean
+              description: Whether the policy was violated.
+            decision:
+              type: string
+              enum: [ALLOW, BLOCK, ESCALATE]
+              description: The resulting decision.
+            reason:
+              type: string
+              description: Human-readable reason for the decision (optional).
+            key:
+              type: string
+              description: Policy key that was evaluated.
     Escalation:
       type: object
       properties:
