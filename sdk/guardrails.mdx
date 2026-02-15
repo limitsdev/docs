@@ -51,7 +51,7 @@ async guard(
 ### Basic usage
 
 ```typescript
-import { Limits } from 'limit-js';
+import { Limits } from '@limits/js';
 
 const limits = new Limits({ apiKey: process.env.LIMITS_API_KEY! });
 
@@ -132,7 +132,7 @@ app.post('/chat', async (req, res) => {
 | `NetworkError` / `TimeoutError` | Request failed or timed out. |
 
 ```typescript
-import { Limits, APIRequestError } from 'limit-js';
+import { Limits, APIRequestError } from '@limits/js';
 
 try {
   const decision = await limits.guard('content-guardrail', text);

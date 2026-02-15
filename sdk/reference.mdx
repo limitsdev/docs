@@ -1,6 +1,6 @@
 ---
 title: "Reference"
-description: "TypeScript types and API summary for limit-js"
+description: "TypeScript types and API summary for @limits/js"
 ---
 
 ## API Reference Summary
@@ -47,7 +47,7 @@ import {
   type PolicyEvaluationResult,
   type Escalation,
   type EscalationResponse,
-} from 'limit-js';
+} from '@limits/js';
 ```
 
 ### Exported types
@@ -73,7 +73,7 @@ import {
 Use `instanceof` for handling:
 
 ```typescript
-import { Limits, InvalidAPIKeyError, APIRequestError } from 'limit-js';
+import { Limits, InvalidAPIKeyError, APIRequestError } from '@limits/js';
 
 try {
   const decision = await limits.check('my-policy', { amount: 100 });

@@ -145,12 +145,12 @@ Visual descriptions for each image so you (or a designer) can create or source t
 
 **How it should look:**
 
-- **Layout:** Terminal/console window: one command (`npm install limit-js` or `yarn add limit-js`) and the success output (package name, version, "added 1 package" or similar).
+- **Layout:** Terminal/console window: one command (`npm install @limits/js` or `yarn add @limits/js`) and the success output (package name, version, "added 1 package" or similar).
 - **Content:** No sensitive paths; generic project folder name (e.g. `my-app`). Optional: cursor on next line to suggest "ready for next step."
 - **Style:** Common terminal look (dark background, green/white text, or your doc’s code-block style). Rounded window frame is optional.
 - **Dimensions:** e.g. 800×220 px.
 
-**One-line brief:** "Terminal showing npm/yarn install limit-js and success message."
+**One-line brief:** "Terminal showing npm/yarn install @limits/js and success message."
 
 ---
 

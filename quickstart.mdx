@@ -7,22 +7,22 @@ description: "Get started with Limits in under 5 minutes"
 
 <CodeGroup>
 ```bash npm
-npm install limit-js
+npm install @limits/js
 ```
 
 ```bash yarn
-yarn add limit-js
+yarn add @limits/js
 ```
 
 ```bash pnpm
-pnpm add limit-js
+pnpm add @limits/js
 ```
 </CodeGroup>
 
 ## Initialize the Client
 
 ```typescript
-import { Limits } from 'limit-js';
+import { Limits } from '@limits/js';
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY,
@@ -65,7 +65,7 @@ if (decision.isBlocked) {
 ## Complete Example
 
 ```typescript
-import { Limits } from 'limit-js';
+import { Limits } from '@limits/js';
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY,

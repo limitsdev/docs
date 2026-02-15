@@ -5,7 +5,7 @@ description: "Install and configure the Limits SDK"
 
 ## Overview
 
-The Limits SDK (**limit-js**) provides a type-safe interface to the Limits Policy API. Your application triggers evaluation via the SDK; the SDK sends requests to the Limits API and returns allow, block, or escalate decisions.
+The Limits SDK (**@limits/js**) provides a type-safe interface to the Limits Policy API. Your application triggers evaluation via the SDK; the SDK sends requests to the Limits API and returns allow, block, or escalate decisions.
 
 <img src="/images/sdk-flow-diagram.png" alt="SDK flow: trigger events (check, evaluate, guard, escalations) and Limits SDK ↔ Limits API" />
 
@@ -16,7 +16,7 @@ You can:
 - **Run guardrails** — check text (e.g. safety, PII) before sending to the user.
 - **List, approve, and decline** escalations.
 
-Authentication uses an API key (Bearer token). Full TypeScript types (e.g. `PolicyEvaluationResult`, `Escalation`, `EscalationResponse`) are exported from `limit-js`. The SDK uses native `fetch` (Node.js 18+).
+Authentication uses an API key (Bearer token). Full TypeScript types (e.g. `PolicyEvaluationResult`, `Escalation`, `EscalationResponse`) are exported from `@limits/js`. The SDK uses native `fetch` (Node.js 18+).
 
 ## Requirements
 
@@ -31,15 +31,15 @@ Install the Limits SDK using your preferred package manager:
 
 <CodeGroup>
 ```bash npm
-npm install limit-js
+npm install @limits/js
 ```
 
 ```bash yarn
-yarn add limit-js
+yarn add @limits/js
 ```
 
 ```bash pnpm
-pnpm add limit-js
+pnpm add @limits/js
 ```
 </CodeGroup>
 
@@ -56,7 +56,7 @@ Create a single client instance and reuse it for all calls.
 **Throws:** `InvalidAPIKeyError` if the key is missing or doesn't start with `sk_`.
 
 ```typescript
-import { Limits } from 'limit-js';
+import { Limits } from '@limits/js';
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY!,
@@ -85,7 +85,7 @@ export LIMITS_API_KEY="sk_your_api_key_here"
 After creating the client, you typically call `check`, `evaluate`, or `guard` with a policy identifier and your input. The result tells you whether the action is allowed, blocked, or needs review (escalation).
 
 ```typescript
-import { Limits } from 'limit-js';
+import { Limits } from '@limits/js';
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY!,

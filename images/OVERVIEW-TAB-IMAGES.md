@@ -36,7 +36,7 @@ This guide lists **what images you need** and **where to put them** for the **In
 
 | # | Where to put | Image filename (suggested) | What the image should show |
 |---|--------------|-----------------------------|----------------------------|
-| 1 | **After "Install the SDK"** (before "Initialize the Client") | `quickstart-terminal.png` (optional) | **Optional:** Terminal showing `npm install limit-js` and success output. |
+| 1 | **After "Install the SDK"** (before "Initialize the Client") | `quickstart-terminal.png` (optional) | **Optional:** Terminal showing `npm install @limits/js` and success output. |
 | 2 | **After "Complete Example"** (before "Next steps") | `quickstart-flow.png` (optional) | **Optional:** Simple flow: "Your app → limits.check() → allow/block/escalate → proceed or stop." |
 
 **Summary for quickstart.mdx:**  

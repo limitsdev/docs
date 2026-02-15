@@ -139,7 +139,7 @@ interface Escalation {
 ## Complete example
 
 ```typescript
-import { Limits } from 'limit-js';
+import { Limits } from '@limits/js';
 
 const limits = new Limits({ apiKey: process.env.LIMITS_API_KEY! });
 
@@ -169,7 +169,7 @@ if (result.isEscalated) {
 **Throws:** `InvalidInputError` for invalid IDs; `APIRequestError`, `NetworkError` for API/network failures.
 
 ```typescript
-import { InvalidInputError, APIRequestError } from 'limit-js';
+import { InvalidInputError, APIRequestError } from '@limits/js';
 
 try {
   await limits.approveEscalation(escalationId);

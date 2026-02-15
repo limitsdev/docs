@@ -171,7 +171,7 @@ All three methods return a `PolicyEvaluationResult`:
 | `NetworkError` / `TimeoutError` | Request failed or timed out. |
 
 ```typescript
-import { Limits, InvalidAPIKeyError, APIRequestError } from 'limit-js';
+import { Limits, InvalidAPIKeyError, APIRequestError } from '@limits/js';
 
 try {
   const decision = await limits.check('my-policy', { amount: 100 });
@@ -195,7 +195,7 @@ try {
 ## Full flow example
 
 ```typescript
-import { Limits, APIRequestError } from 'limit-js';
+import { Limits, APIRequestError } from '@limits/js';
 
 const limits = new Limits({ apiKey: process.env.LIMITS_API_KEY! });
 
