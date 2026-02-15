@@ -17,9 +17,17 @@
         "group": "Introduction",
         "icon": "book-open",
         "pages": [
-          "overview",
           "index",
-          "quickstart",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Policies",
+        "icon": "shield",
+        "pages": [
+          "policies/conditions",
+          "policies/instructions",
+          "policies/guardrails",
           "policies/instructions-vs-conditions"
         ]
       },
