@@ -1,0 +1,167 @@
+---
+title: "Guardrails"
+description: "Evaluate guardrails policies on text with guard()"
+---
+
+Guardrails policies check **text** (e.g. model output or user messages) for safety, PII, moderation, and other rules. Use the SDK method **`guard()`** to evaluate a guardrails policy before sending content to users or downstream systems.
+
+For a full explanation of guardrail types (PII, moderation, jailbreak, NSFW, URL filter, etc.) and when to use each, see **[Policies: Guardrails](/policies/guardrails)**.
+
+<Card title="Policies: Guardrails" icon="shield" href="/policies/guardrails">
+  Learn about guardrail types and how to configure them.
+</Card>
+
+---
+
+## `guard(policyKeyOrTag, input)`
+
+Evaluates a **guardrails** policy on a string. `input` is the text to check (e.g. LLM response or user message).
+
+**Signature**
+
+```typescript
+async guard(
+  policyKeyOrTag: string,
+  input: string
+): Promise<PolicyEvaluationResult>
+```
+
+| Parameter         | Type     | Required | Description |
+|-------------------|----------|----------|-------------|
+| `policyKeyOrTag`  | `string` | **Yes**  | Policy key (e.g. `'content-guardrail'`) or tag (e.g. `'#safety'`). |
+| `input`           | `string` | **Yes**  | Text to check (e.g. model output). |
+
+**Returns:** `Promise<PolicyEvaluationResult>`. See [Result shape](#result-shape) below.
+
+**Throws:** `InvalidPolicyKeyError`, `InvalidInputError`, `APIRequestError`, `NetworkError`, `TimeoutError`.
+
+---
+
+## Policy key or tag
+
+- **Policy key** — A single guardrails policy, e.g. `'content-guardrail'`.
+- **Tag** — All policies with that tag are evaluated. Use the tag name with a `#` prefix, e.g. `'#safety'`.
+
+**When using a tag,** the strictest result wins: **BLOCK** → **ESCALATE** → **ALLOW**. If any policy blocks, the decision is block; otherwise if any escalates, the decision is escalate; otherwise allow.
+
+---
+
+## Examples
+
+### Basic usage
+
+```typescript
+import { Limits } from 'limit-js';
+
+const limits = new Limits({ apiKey: process.env.LIMITS_API_KEY! });
+
+const modelOutput = "Here is the user's email: john@company.com and phone 555-123-4567.";
+const decision = await limits.guard('content-guardrail', modelOutput);
+
+if (decision.isBlocked) {
+  console.error('Blocked:', decision.data.reason);
+  return;
+}
+if (decision.isEscalated) {
+  console.warn('Needs review:', decision.data.reason);
+  return;
+}
+// Allowed — safe to send to user
+console.log('Allowed:', decision.data.reason);
+```
+
+### By tag
+
+```typescript
+const decision = await limits.guard('#safety', modelOutput);
+```
+
+### In middleware (Node/Express)
+
+```typescript
+app.post('/chat', async (req, res) => {
+  const userMessage = req.body.message;
+  const llmResponse = await callLLM(userMessage);
+
+  const decision = await limits.guard('content-guardrail', llmResponse);
+  if (decision.isBlocked) {
+    return res.status(400).json({ error: 'Content blocked', reason: decision.data.reason });
+  }
+  if (decision.isEscalated) {
+    return res.status(202).json({ message: 'Pending review', reason: decision.data.reason });
+  }
+  res.json({ response: llmResponse });
+});
+```
+
+---
+
+## Result shape
+
+`guard()` returns the same `PolicyEvaluationResult` as `check()` and `evaluate()`:
+
+```typescript
+{
+  data: { action: 'ALLOW' | 'BLOCK' | 'ESCALATE'; reason: string };
+  isAllowed: boolean;
+  isBlocked: boolean;
+  isEscalated: boolean;
+  errors?: string[];  // validation errors when present
+}
+```
+
+| Field          | Type     | Description |
+|----------------|----------|-------------|
+| `data.action`  | `'ALLOW' \| 'BLOCK' \| 'ESCALATE'` | Decision. |
+| `data.reason`  | `string` | Human-readable reason. |
+| `isAllowed`    | `boolean`| `data.action === 'ALLOW'`. |
+| `isBlocked`    | `boolean`| `data.action === 'BLOCK'`. |
+| `isEscalated`  | `boolean`| `data.action === 'ESCALATE'`. |
+| `errors`       | `string[] \| undefined` | Validation errors from the API when present. |
+
+---
+
+## Error handling
+
+| Error class             | When it is thrown |
+|-------------------------|--------------------|
+| `InvalidAPIKeyError`    | Key missing or doesn't start with `sk_`. |
+| `InvalidPolicyKeyError` | Policy key/tag empty or invalid. |
+| `InvalidInputError`     | Empty string input. |
+| `APIRequestError`       | API returned 4xx/5xx (`error.statusCode`, `error.response`). |
+| `NetworkError` / `TimeoutError` | Request failed or timed out. |
+
+```typescript
+import { Limits, APIRequestError } from 'limit-js';
+
+try {
+  const decision = await limits.guard('content-guardrail', text);
+  // use decision
+} catch (err) {
+  if (err instanceof APIRequestError) {
+    console.error('API error:', err.statusCode, err.message);
+    if (err.statusCode === 404) console.error('Policy not found');
+    return;
+  }
+  throw err;
+}
+```
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Policies: Guardrails" icon="shield" href="/policies/guardrails">
+    Guardrail types (PII, moderation, jailbreak, etc.).
+  </Card>
+  <Card title="Policies (SDK)" icon="code" href="/sdk/policies">
+    <code>check()</code>, <code>evaluate()</code>, and result shape.
+  </Card>
+  <Card title="Platform: Guardrails" icon="layout" href="/platform/guardrails">
+    Create and edit guardrails in the UI.
+  </Card>
+  <Card title="Escalations" icon="user-check" href="/sdk/human-approvals">
+    List, approve, and decline escalations.
+  </Card>
+</CardGroup>

@@ -13,31 +13,31 @@ In your application you call the Limits SDK to evaluate (check) a request. You p
 
 <CodeGroup>
 ```javascript JavaScript
-const decision = await limits.checkConditions('your-policy-key', {
-  amount: 100,
-  user: { risk_level: 'low' },
-});
-
-if (decision.isAllowed) console.log(' Allowed');
-if (decision.isBlocked) console.log(' Blocked');
-if (decision.isEscalated) console.log(' Escalated');
-```
-```typescript TypeScript
-const decision = await limits.checkConditions('your-policy-key', {
+const decision = await limits.check('your-policy-key', {
   amount: 100,
   user: { risk_level: 'low' },
 });
 
 if (decision.isAllowed) console.log('Allowed');
-if (decision.isBlocked) console.log(' Blocked');
-if (decision.isEscalated) console.log(' Escalated');
+if (decision.isBlocked) console.log('Blocked');
+if (decision.isEscalated) console.log('Escalated');
+```
+```typescript TypeScript
+const decision = await limits.check('your-policy-key', {
+  amount: 100,
+  user: { risk_level: 'low' },
+});
+
+if (decision.isAllowed) console.log('Allowed');
+if (decision.isBlocked) console.log('Blocked');
+if (decision.isEscalated) console.log('Escalated');
 ```
 </CodeGroup>
 
 So the platform is for **checking/evaluating** the response or context from your AI agent (or any request you want to govern) and acting on the result: allow, block, or escalate.
 
-<Card title="Policies (SDK)" icon="code" href="/sdk/policies">
-  Check policies with structured data or text.
+<Card title="Conditions" icon="code" href="/policies/conditions">
+  Deep dive into conditions (operators, field paths, SDK/API).
 </Card>
 
 ## Quick difference between the two modes
@@ -77,7 +77,7 @@ Policy in Conditions mode: block high-value payments, escalate risky users.
 
 When you call the SDK with `{ amount: 100, user: { risk_level: 'low' } }`, Limits evaluates these rules and returns allow, block, or escalate.
 
-<Card title="Policy conditions" icon="code" href="/platform/policy-conditions">
+<Card title="Conditions" icon="code" href="/policies/conditions">
   Build conditions with operators and field paths.
 </Card>
 
@@ -98,11 +98,14 @@ So in Instructions mode you answer: **"What is the required action or behavior?"
 Policy in Instructions mode: you write instructions such as:
 
 - "Block any payment over $5,000."
-- "Escalate to human approval when risk level is high."
+- "Escalate when risk level is high."
 - "Otherwise allow and log the request."
 
 When you call the SDK with a payload like `{ amount: 100 }`, Limits evaluates using these instructions and returns allow, block, or escalate.
 
+<Card title="Instructions" icon="file-text" href="/policies/instructions">
+  Full guide to instructions policies.
+</Card>
 <Card title="AI Assistant" icon="sparkles" href="/platform/ai-assistant">
   Create policies from natural language with the Assistant.
 </Card>
@@ -122,10 +125,16 @@ When you call the SDK with a payload like `{ amount: 100 }`, Limits evaluates us
 You can switch between the two **modes** from the policy edit page; each policy has one mode.
 
 <CardGroup cols={2}>
-  <Card title="Policies" icon="shield" href="/platform/policies">
-    Create and manage policies.
+  <Card title="Conditions" icon="code" href="/policies/conditions">
+    Conditions deep dive.
   </Card>
-  <Card title="Policy conditions" icon="code" href="/platform/policy-conditions">
-    Operators and field paths for conditions.
+  <Card title="Instructions" icon="file-text" href="/policies/instructions">
+    Instructions deep dive.
+  </Card>
+  <Card title="Guardrails" icon="shield" href="/policies/guardrails">
+    Guardrails (PII, moderation, etc.).
+  </Card>
+  <Card title="Platform: Policies" icon="layout" href="/platform/policies">
+    Create and manage policies in the UI.
   </Card>
 </CardGroup>

@@ -1,0 +1,68 @@
+---
+title: "Instructions"
+description: "Define policy behavior in natural language"
+---
+
+Instructions policies answer **"What should happen?"** You describe the required action or behavior in plain language. Limits uses that description to evaluate each request and return **allow**, **block**, or **escalate**.
+
+## What instructions are for
+
+- **Natural language** — No need to write structured rules. Describe the policy in prose or bullets.
+- **Flexible interpretation** — The system interprets your intent (e.g. "Block requests over $10,000" or "Escalate when the user is high risk").
+- **Same three outcomes** — Every request still gets a clear allow, block, or escalate decision.
+
+Use instructions when you prefer to specify behavior in words rather than in field/operator form, or when the logic is easier to describe than to express as conditions.
+
+## How instructions work
+
+1. In the policy editor, you write **instructions** in the Instructions tab (e.g. bullets or short paragraphs).
+2. For each request, Limits evaluates the payload and your instructions together.
+3. The result is still **allow**, **block**, or **escalate** with a reason.
+
+Instructions are evaluated per request; the system does not expose a separate "condition list" — the natural language is the policy.
+
+## Writing good instructions
+
+- **Be explicit about outcomes**: "Block any payment over $5,000." "Escalate when risk level is high."
+- **Mention key fields** if they matter: amount, user risk, resource type, etc.
+- **Default behavior**: State what happens when nothing special applies (e.g. "Otherwise allow.").
+
+Example set of instructions:
+
+- Block any request where the amount exceeds $10,000.
+- Escalate to review when the user's risk level is high.
+- Allow all other requests and log them.
+
+## Example
+
+Policy in Instructions mode:
+
+- "Block any payment over $5,000."
+- "Escalate to review when risk level is high."
+- "Otherwise allow and log the request."
+
+Request `{ amount: 100 }` → **Allow**.  
+Request `{ amount: 6000 }` → **Block**.  
+Request `{ amount: 100, user: { risk_level: 'high' } }` → **Escalate**.
+
+## Evaluating instructions (SDK and API)
+
+- **SDK**: Use `limits.evaluate(policyKeyOrTag, prompt, response)` where `prompt` is the user prompt and `response` is the LLM output (or input to validate). See [SDK Policies](/sdk/policies).
+- **API**: `POST /api/policies/{policyKey}/evaluate/instructions` with body `{ "request": { "prompt": "...", "input": "..." } }`. See [API Reference](/api-reference/evaluate-instructions).
+
+You can use a **policy key** or a **tag**. With a tag, the strictest result across all matching policies wins: Block → Escalate → Allow.
+
+<CardGroup cols={2}>
+  <Card title="Conditions" icon="code" href="/policies/conditions">
+    Define policies with structured rules instead.
+  </Card>
+  <Card title="Guardrails" icon="shield" href="/policies/guardrails">
+    Content safety, PII, and moderation policies.
+  </Card>
+  <Card title="Platform: Policies" icon="layout" href="/platform/policies">
+    Create and edit policies in the UI.
+  </Card>
+  <Card title="SDK: evaluate()" icon="code" href="/sdk/policies">
+    Evaluate instructions from your app.
+  </Card>
+</CardGroup>

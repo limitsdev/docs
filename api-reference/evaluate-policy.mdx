@@ -1,7 +1,26 @@
 ---
 title: "Evaluate policy"
-description: "Evaluate a policy by key with the given input (request/response/text)"
-openapi: "api-reference/openapi.yaml POST /api/policies/{policyKey}/evaluate"
+description: "Overview of policy evaluation endpoints (conditions, instructions, guardrails)"
 ---
 
-Evaluates a policy by key with the given input. The body can include `request` (structured data for condition evaluation), `response`, and/or `text` (for LLM-based policies). Returns the evaluation result with action (ALLOW, BLOCK, or ESCALATE).
+The API provides three evaluation endpoints, one per policy mode:
+
+| Endpoint | Mode | Request body | Use case |
+|----------|------|--------------|----------|
+| [POST /api/policies/{policyKey}/evaluate/conditions](/api-reference/evaluate-conditions) | Conditions | `request.input` (object) | Structured rules (amount, user, resource). |
+| [POST /api/policies/{policyKey}/evaluate/instructions](/api-reference/evaluate-instructions) | Instructions | `request.prompt`, `request.input` (string) | Prompt + LLM response validation. |
+| [POST /api/policies/{policyKey}/evaluate/guardrails](/api-reference/evaluate-guardrails) | Guardrails | `request.input` (string) | Text safety, PII, moderation. |
+
+All three return the same shape: `action` (ALLOW, BLOCK, or ESCALATE), `success`, `message`, and optional `details` or `error`.
+
+<CardGroup cols={2}>
+  <Card title="Evaluate conditions" icon="code" href="/api-reference/evaluate-conditions">
+    POST /api/policies/:key/evaluate/conditions
+  </Card>
+  <Card title="Evaluate instructions" icon="code" href="/api-reference/evaluate-instructions">
+    POST /api/policies/:key/evaluate/instructions
+  </Card>
+  <Card title="Evaluate guardrails" icon="shield" href="/api-reference/evaluate-guardrails">
+    POST /api/policies/:key/evaluate/guardrails
+  </Card>
+</CardGroup>

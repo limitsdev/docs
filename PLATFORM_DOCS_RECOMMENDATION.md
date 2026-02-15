@@ -126,7 +126,7 @@ docs/
 │   ├── simulation.mdx                # Policy testing
 │   ├── logs.mdx                      # Viewing and filtering logs
 │   ├── integrations.mdx              # Slack, webhooks setup
-│   ├── approvals.mdx                 # Human approval workflow (UI)
+│   ├── approvals.mdx                 # Escalation / approvals workflow (UI)
 │   ├── api-keys.mdx                 # API key management
 │   └── glossary.mdx                 # Terms and definitions
 ```

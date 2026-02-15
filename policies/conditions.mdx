@@ -1,0 +1,99 @@
+---
+title: "Conditions"
+description: "Define when to allow, block, or escalate using structured rules"
+---
+
+Conditions policies answer **"When does this rule apply?"** You define explicit rules (e.g. field, operator, value) that are evaluated against each request. Limits returns **allow**, **block**, or **escalate** based on which condition matches.
+
+## What conditions are for
+
+- **Deterministic outcomes** — Same input always produces the same result. No model inference at evaluation time.
+- **Structured data** — You pass an object (e.g. `request.amount`, `user.risk_level`). Conditions run against that payload.
+- **Clear audit trail** — You can see exactly which condition matched and why.
+
+Use conditions when your rules are expressible as comparisons (amounts, thresholds, enums, presence/absence). Examples: "Block if amount &gt; 10000", "Escalate when user.risk_level is high", "Allow when resource is in allowed list."
+
+## How conditions work
+
+1. You define **Allow**, **Block**, and **Escalate** condition sets in the policy editor. Each set can have multiple rules.
+2. For each request, Limits evaluates the payload against your rules.
+3. **Priority**: Block is checked first, then Escalate, then Allow. The first matching set determines the outcome.
+4. If nothing matches, the **default action** (Allow, Block, or Escalate) is used.
+
+<Warning>
+Block always wins. If any block condition matches, the request is blocked regardless of other rules.
+</Warning>
+
+## Building conditions
+
+### Operators
+
+| Operator | Description | Example |
+|----------|-------------|---------|
+| `=` or `==` | Equals | `user.risk_level == 'high'` |
+| `!=` | Not equals | `request.amount != 0` |
+| `<` | Less than | `request.amount < 1000` |
+| `<=` | Less than or equal | `request.amount <= 1000` |
+| `>` | Greater than | `request.amount > 1000` |
+| `>=` | Greater than or equal | `request.amount >= 1000` |
+| `contains` | String contains | `user.country contains 'US'` |
+| `null` | Is null/undefined | `user.risk_level null` |
+| `notNull` | Is not null | `user.risk_level notNull` |
+
+### Field paths
+
+Field paths reference keys in the request payload. Use dot notation for nested data:
+
+- **Top-level**: `request.amount`, `user.id`, `user.risk_level`
+- **Nested**: `request.payment.method`, `user.profile.country`
+- **Arrays**: `request.items[0].price`
+
+Common paths:
+
+| Path | Typical use |
+|------|-------------|
+| `request.amount` | Payment or transaction amount |
+| `request.currency` | Currency code (e.g. USD) |
+| `user.id` | User identifier |
+| `user.risk_level` | Risk tier (e.g. low, high) |
+| `user.country` | User's country |
+
+### Combining rules
+
+- **AND (`&&`)** — All conditions must be true.
+- **OR (`||`)** — At least one condition must be true.
+- **Parentheses** — Control order: `(request.amount > 1000 \|\| request.amount < 0) && user.verified == true`
+
+## Example
+
+Policy: block high-value payments, escalate risky users, otherwise allow.
+
+- **Block** when: `request.amount > 5000`
+- **Escalate** when: `user.risk_level == 'high'`
+- **Allow** when: neither matches (or explicit allow rules)
+
+Request `{ amount: 100, user: { risk_level: 'low' } }` → **Allow**.  
+Request `{ amount: 6000 }` → **Block**.  
+Request `{ amount: 100, user: { risk_level: 'high' } }` → **Escalate**.
+
+## Evaluating conditions (SDK and API)
+
+- **SDK**: Use `limits.check(policyKeyOrTag, input)` where `input` is the request object. See [SDK Policies](/sdk/policies).
+- **API**: `POST /api/policies/{policyKey}/evaluate/conditions` with body `{ "request": { "input": { ... } } }`. See [API Reference](/api-reference/evaluate-conditions).
+
+You can pass a **policy key** (e.g. `amount-minimum-usd`) or a **tag** (e.g. `#payments`). With a tag, all policies with that tag are evaluated and the strictest result wins: Block → Escalate → Allow.
+
+<CardGroup cols={2}>
+  <Card title="Instructions" icon="file-text" href="/policies/instructions">
+    Define policies in natural language instead of rules.
+  </Card>
+  <Card title="Guardrails" icon="shield" href="/policies/guardrails">
+    Content safety, PII, and moderation policies.
+  </Card>
+  <Card title="Platform: Policies" icon="layout" href="/platform/policies">
+    Create and edit policies in the UI.
+  </Card>
+  <Card title="SDK: check()" icon="code" href="/sdk/policies">
+    Evaluate conditions from your app.
+  </Card>
+</CardGroup>

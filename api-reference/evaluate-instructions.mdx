@@ -1,0 +1,7 @@
+---
+title: "Evaluate instructions"
+description: "Evaluate an instructions policy with prompt and input"
+openapi: "api-reference/openapi.yaml POST /api/policies/{policyKey}/evaluate/instructions"
+---
+
+Evaluates an **instructions** policy by key. Send a JSON body with `request.prompt` (optional) and `request.input` (string, e.g. LLM response). The API returns the evaluation result with `action` (ALLOW, BLOCK, or ESCALATE), `success`, and `message`.

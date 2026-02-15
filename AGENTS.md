@@ -4,16 +4,16 @@ This documentation covers **Limits** (limits.dev), the AI policy layer for agent
 
 ## What Limits does
 
-- **Policy layer**: Intercepts agentic actions; evaluates each request against policies and returns **allow**, **block**, or **escalate** to human approval.
+- **Policy layer**: Intercepts agentic actions; evaluates each request against policies and returns **allow**, **block**, or **escalate**.
 - **Deterministic rules**: Policies use conditions (e.g. amount, risk, resource) and optional natural-language instructions. No prompt ambiguity.
 - **One layer across stack**: Same policies via API, SDK, and backend. Dashboard for policies, approvals, logs, API keys.
 
 ## Key concepts
 
 - **Policies**: Define when to allow, block, or escalate. Use the visual condition builder and/or the AI Assistant to generate from natural language.
-- **Outcomes**: Allow (permitted), Block (denied), Escalate (human approval in Approvals queue). Priority: Block > Escalate > Allow.
-- **SDK**: `limits.checkConditions()` and related calls from app code. See SDK docs (installation, policies, agents, human-approvals).
-- **API**: REST API for policy evaluation and human approval actions. See API Reference.
+- **Outcomes**: Allow (permitted), Block (denied), Escalate (review in Approvals queue). Priority: Block > Escalate > Allow.
+- **SDK**: `limits.check()`, `limits.evaluate()`, and `limits.guard()` from app code for conditions, instructions, and guardrails. See SDK docs (installation, policies, guardrails, human-approvals).
+- **API**: REST API for policy evaluation and escalations. See API Reference.
 - **Platform**: Dashboard, Policies, Logs, Approvals, API Keys, Integrations, Notifications.
 
 ## How to answer

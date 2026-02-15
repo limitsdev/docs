@@ -1,9 +1,9 @@
 ---
 title: "Introduction"
-description: "Limits REST API for policy evaluation and human approvals"
+description: "Limits REST API for policy evaluation and escalations"
 ---
 
-The Limits API lets you evaluate policies and manage human approval workflows programmatically. All endpoints require API key authentication.
+The Limits API lets you evaluate policies (conditions, instructions, guardrails) and manage escalations programmatically. All endpoints require API key authentication.
 
 ## Base URL
 
@@ -25,13 +25,15 @@ Create and manage API keys in the [Platform API Keys](/platform/api-keys) page.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/policies/{policyKey}/evaluate` | Evaluate a policy against a request payload |
-| GET | `/api/human-approvals` | List all human approval requests for your organization |
-| GET | `/api/human-approvals/{policyId}` | List human approvals filtered by policy ID |
-| POST | `/api/human-approvals/approve` | Approve a pending human approval request |
-| POST | `/api/human-approvals/decline` | Decline a pending human approval request |
+| POST | `/api/policies/{policyKey}/evaluate/conditions` | Evaluate a **conditions** policy with structured input |
+| POST | `/api/policies/{policyKey}/evaluate/instructions` | Evaluate an **instructions** policy (prompt + input) |
+| POST | `/api/policies/{policyKey}/evaluate/guardrails` | Evaluate a **guardrails** policy with text input |
+| GET | `/api/escalations` | List all escalations for your organization |
+| GET | `/api/escalations/{policyId}` | List escalations filtered by policy ID |
+| POST | `/api/escalations/approve` | Approve a pending escalation |
+| POST | `/api/escalations/decline` | Decline a pending escalation |
 
-Use the **Policies** and **Human Approvals** sections in the sidebar to open each endpoint’s reference page: parameters, request/response schemas, and example requests.
+Use the **Policy evaluation** and **Escalations** sections in the sidebar to open each endpoint’s reference: parameters, request/response schemas, and examples.
 
 <Card title="SDK Reference" icon="code" href="/sdk/installation">
   For a better developer experience, use our SDK instead of raw API calls.

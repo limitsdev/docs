@@ -5,12 +5,18 @@ description: "Install and configure the Limits SDK"
 
 ## Overview
 
-The Limits SDK provides a type-safe interface to the Limits Policy Evaluation API. You can:
+The Limits SDK (**limit-js**) provides a type-safe interface to the Limits Policy API. Your application triggers evaluation via the SDK; the SDK sends requests to the Limits API and returns allow, block, or escalate decisions.
 
-- **Evaluate policies** with structured conditions (e.g. amount, currency) or with interaction text (e.g. LLM responses).
-- **List, approve, and decline** human approval requests for escalated policies.
+<img src="/images/sdk-flow-diagram.png" alt="SDK flow: trigger events (check, evaluate, guard, escalations) and Limits SDK ↔ Limits API" />
 
-Authentication uses an API key (Bearer token). The SDK uses native `fetch` (Node.js 18+).
+You can:
+
+- **Check conditions** — evaluate policies with structured input (e.g. amount, currency).
+- **Evaluate instructions** — validate prompt + LLM response (e.g. in middleware).
+- **Run guardrails** — check text (e.g. safety, PII) before sending to the user.
+- **List, approve, and decline** escalations.
+
+Authentication uses an API key (Bearer token). Full TypeScript types (e.g. `PolicyEvaluationResult`, `Escalation`, `EscalationResponse`) are exported from `limit-js`. The SDK uses native `fetch` (Node.js 18+).
 
 ## Requirements
 
@@ -25,15 +31,15 @@ Install the Limits SDK using your preferred package manager:
 
 <CodeGroup>
 ```bash npm
-npm install @limits/sdk
+npm install limit-js
 ```
 
 ```bash yarn
-yarn add @limits/sdk
+yarn add limit-js
 ```
 
 ```bash pnpm
-pnpm add @limits/sdk
+pnpm add limit-js
 ```
 </CodeGroup>
 
@@ -46,16 +52,14 @@ Create a single client instance and reuse it for all calls.
 | Parameter        | Type      | Required | Description |
 |------------------|-----------|----------|-------------|
 | `config.apiKey`  | `string`  | **Yes**  | API key. Must start with `sk_`. |
-| `config.debug`   | `boolean` | No       | Enable `[LimitsSDK]` console logs. Default: `false`. |
 
-**Throws:** `InvalidAPIKeyError` if the key is missing, not a string, doesn't start with `sk_`, or is too short.
+**Throws:** `InvalidAPIKeyError` if the key is missing or doesn't start with `sk_`.
 
 ```typescript
-import { Limits } from '@limits/sdk';
+import { Limits } from 'limit-js';
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY!,
-  debug: process.env.NODE_ENV === 'development',
 });
 ```
 
@@ -66,11 +70,7 @@ const limits = new Limits({
 
 ## Get Your API Key
 
-1. Sign up at [app.limits.dev](https://app.limits.dev)
-2. Click on the **User Menu** (your profile section with the person icon at the bottom left of the dashboard)
-3. In the settings modal that opens, click on **API Keys** (with the `<>` icon) in the left sidebar
-4. Click **+ Generate API Key** to create a new API key
-5. Add it to your environment variables
+Get an API key from the [Limits dashboard](https://app.limits.dev): **Dashboard → API keys**. Add it to your environment variables.
 
 ```bash
 export LIMITS_API_KEY="sk_your_api_key_here"
@@ -82,34 +82,26 @@ export LIMITS_API_KEY="sk_your_api_key_here"
 
 ## Quick Example
 
+After creating the client, you typically call `check`, `evaluate`, or `guard` with a policy identifier and your input. The result tells you whether the action is allowed, blocked, or needs review (escalation).
+
 ```typescript
-import { Limits } from '@limits/sdk';
+import { Limits } from 'limit-js';
 
 const limits = new Limits({
   apiKey: process.env.LIMITS_API_KEY!,
-  debug: true, // Optional: enable [LimitsSDK] logging
 });
 
-// Check policy with structured data (conditions)
-const result = await limits.check('amount-minimum-usd', {
-  amount: 500,
-  currency: 'USD',
-});
-
-if (result.isBlocked) {
-  console.error('Blocked:', result.data.reason);
-} else if (result.isEscalated) {
-  console.warn('Escalated:', result.data.reason);
-} else {
-  console.log('Allowed:', result.data.reason);
-}
+const decision = await limits.check('amount-minimum-usd', { amount: 500, currency: 'USD' });
+if (decision.isBlocked) console.error(decision.data.reason);
+else if (decision.isEscalated) console.warn('Needs review:', decision.data.reason);
+else console.log('Allowed');
 ```
 
 ## Next Steps
 
 <CardGroup cols={2}>
   <Card title="Policies" icon="shield" href="/sdk/policies">
-    Evaluate policies with conditions or interaction text using <code>check()</code>.
+    Use <code>check()</code>, <code>evaluate()</code>, and <code>guard()</code> for conditions, instructions, and guardrails.
   </Card>
   <Card title="API Keys" icon="key" href="/platform/api-keys">
     Generate API keys in the platform.

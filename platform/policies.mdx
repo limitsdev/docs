@@ -3,9 +3,38 @@ title: "Policies"
 description: "Create, manage, and deploy policies through the platform UI"
 ---
 
-Policies are the core of the Limits platform. They define rules that determine whether each request is **allowed**, **blocked**, or **escalated** to human approval. You create policies from the **New Policy** button, choose **Conditions** or **Instructions** mode, and the AI Assistant generates the policy. You then edit, simulate, deploy, and manage all policies from the **Policies** page.
+Policies are the core of the Limits platform. They define rules that determine whether each request is **allowed**, **blocked**, or **escalated**. You create policies from the **New Policy** button, choose **Conditions** or **Instructions** mode, and the AI Assistant generates the policy. You then edit, simulate, deploy, and manage all policies from the **Policies** page.
 
 ## How the platform flow works
+
+<div className="platform-flow-diagram" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', margin: '24px 0', fontFamily: 'system-ui, sans-serif', fontSize: '14px' }}>
+  <div style={{ background: '#f5f5f5', border: '1px solid #d0d0d0', borderRadius: '8px', padding: '16px 20px', minWidth: '200px' }}>
+    <div style={{ fontWeight: 600, marginBottom: '10px', color: '#1a1a1a' }}>Trigger event:</div>
+    <ul style={{ margin: 0, paddingLeft: '18px', color: '#333', lineHeight: 1.6 }}>
+      <li>Click Create Policy</li>
+      <li>Describe requirements</li>
+      <li>Select mode: Conditions, Instructions, or Guardrail</li>
+      <li>Submit</li>
+    </ul>
+  </div>
+  <div style={{ flexShrink: 0 }}>
+    <svg width="32" height="24" viewBox="0 0 32 24" fill="none"><path d="M2 12h24M24 8l6 4-6 4" stroke="#666" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+  </div>
+  <div style={{ background: '#f5f5f5', border: '1px solid #d0d0d0', borderRadius: '12px', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '24px', position: 'relative' }}>
+    <div style={{ background: '#eee', border: '1px solid #d0d0d0', borderRadius: '6px', padding: '12px 20px', fontWeight: 500, color: '#1a1a1a' }}>AI Assistant</div>
+    <div style={{ position: 'relative', width: '72px', height: '56px', flexShrink: 0 }}>
+      <svg width="72" height="56" viewBox="0 0 72 56" style={{ overflow: 'visible' }}>
+        <path d="M 8 28 Q 36 6 64 28" stroke="#666" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M 56 26 L 64 28 L 56 30" stroke="#666" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M 64 28 Q 36 50 8 28" stroke="#666" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M 16 30 L 8 28 L 16 26" stroke="#666" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        <text x="36" y="18" textAnchor="middle" fill="#333" fontSize="10">action</text>
+        <text x="36" y="48" textAnchor="middle" fill="#333" fontSize="10">result</text>
+      </svg>
+    </div>
+    <div style={{ background: '#eee', border: '1px solid #d0d0d0', borderRadius: '6px', padding: '12px 20px', fontWeight: 500, color: '#1a1a1a' }}>Policy & Simulation</div>
+  </div>
+</div>
 
 Creating and managing a policy follows this flow:
 
@@ -14,10 +43,11 @@ Creating and managing a policy follows this flow:
 3. **Result by mode** — What you see in the policy tabs depends on the mode you chose:
    - **Conditions mode** — Allow / Block / Escalate tabs with structured rules (CEL and condition builder).
    - **Instructions mode** — An Instructions tab with natural language. Same options for notifications.
+   - **Guardrail mode** — A guardrails schema (PII, moderation, jailbreak, etc.). See [Guardrails](/platform/guardrails).
 4. **Edit, simulate, deploy** — You can edit the policy (key, tags, default action, conditions or instructions), run **Simulation** with a JSON payload, and **Deploy** (or rely on auto-save) to save the policy.
 5. **Policies list** — Open **Policies** from the sidebar to see all policies in a table: search by key, filter by status, and edit or delete.
 
-<Card title="Instructions vs Conditions" icon="lightbulb" href="/platform/instructions-vs-conditions">
+<Card title="Instructions vs Conditions" icon="lightbulb" href="/policies/instructions-vs-conditions">
   When to use Conditions mode vs Instructions mode.
 </Card>
 
@@ -31,12 +61,12 @@ Creating and managing a policy follows this flow:
 ### Step 2: Describe your policy and choose mode
 
 - **Describe** your policy in plain language (e.g. *"Limit Stripe payments to $1000 per day"* or *"Allow maximum 100 API requests per minute"*).
-- **Choose mode:** **Conditions** (structured rules) or **Instructions** (natural language). You cannot mix both in one policy.
+- **Choose mode:** **Conditions** (structured rules), **Instructions** (natural language), or **Guardrail** (content safety, PII, moderation). You cannot mix modes in one policy.
 - **Submit** with Enter or the arrow button.
 
 ### Step 3: Assistant generates the policy
 
-- You are navigated to **`/assistant/conditions`** or **`/assistant/instructions`** depending on your choice.
+- You are navigated to **`/assistant/conditions`**, **`/assistant/instructions`**, or **`/assistant/guardrail`** depending on your choice.
 - The Assistant streams four steps: *Processing your request* → *Analyzing requirements* → *Generating policy configuration* → *Finalizing*.
 - When streaming finishes, the view switches to a **split layout**:
   - **Left (Results area):** Policy header (status, deploy), policy config (key, tags, default action), **policy tabs** (content depends on mode), use cases, and simulation.
@@ -63,7 +93,7 @@ Every policy has:
 | **Tags** | Labels for organizing (e.g. `payment`, `fraud-prevention`). |
 | **Status** | **Active** (enforcing) or **Inactive** (disabled). |
 | **Default action** | When no condition matches: **Allow**, **Block**, or **Escalate**. |
-| **Policy tabs** | **Conditions mode:** Allow / Block / Escalate tabs with CEL and condition builder. **Instructions mode:** Instructions tab with natural language. |
+| **Policy tabs** | **Conditions mode:** Allow / Block / Escalate tabs with CEL and condition builder. **Instructions mode:** Instructions tab with natural language. **Guardrail mode:** Guardrails schema (PII, moderation, etc.). See [Guardrails](/platform/guardrails). |
 | **Notifications** (optional) | Webhooks (and Slack when available) per action. See [Notifications](/platform/notifications). |
 
 <Card title="Policy Conditions" icon="code" href="/platform/policy-conditions">
@@ -104,6 +134,9 @@ The Policies page is your list and management surface for all policies.
 | 6 | Policies page | Open from sidebar or after saving | Table of policies; search, filter, edit, delete |
 
 <CardGroup cols={2}>
+  <Card title="Guardrails" icon="shield" href="/platform/guardrails">
+    Create and manage guardrails policies (PII, moderation, safety).
+  </Card>
   <Card title="AI Assistant" icon="sparkles" href="/platform/ai-assistant">
     Create and refine policies with AI
   </Card>
