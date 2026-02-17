@@ -55,6 +55,7 @@
           "sdk/installation",
           "sdk/policies",
           "sdk/human-approvals",
+          "sdk/langchain",
           "sdk/reference"
         ]
       },

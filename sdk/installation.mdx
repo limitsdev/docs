@@ -16,6 +16,10 @@ You can:
 - **Run guardrails** — check text (e.g. safety, PII) before sending to the user.
 - **List, approve, and decline** escalations.
 
+<Info>
+**Integrate with LangChain.** You can use the SDK inside LangChain custom middleware to run guardrails, instructions, and conditions on your agent. See [LangChain integration](/sdk/langchain).
+</Info>
+
 Authentication uses an API key (Bearer token). Full TypeScript types (e.g. `PolicyEvaluationResult`, `Escalation`, `EscalationResponse`) are exported from `@limits/js`. The SDK uses native `fetch` (Node.js 18+).
 
 ## Requirements
@@ -102,6 +106,9 @@ else console.log('Allowed');
 <CardGroup cols={2}>
   <Card title="Policies" icon="shield" href="/sdk/policies">
     Use <code>check()</code>, <code>evaluate()</code>, and <code>guard()</code> for conditions, instructions, and guardrails.
+  </Card>
+  <Card title="LangChain" icon="plug" href="/sdk/langchain">
+    Use Limits with LangChain agents via custom middleware.
   </Card>
   <Card title="API Keys" icon="key" href="/platform/api-keys">
     Generate API keys in the platform.

@@ -23,6 +23,9 @@ Limits intercepts every agentic action at the edge, centralizes and versions sta
   <Card title="SDK Reference" icon="code" href="/sdk/installation">
     Explore the SDK and start defining policies.
   </Card>
+  <Card title="LangChain integration" icon="plug" href="/sdk/langchain">
+    Integrate with LangChain agents via custom middleware.
+  </Card>
 </CardGroup>
 
 ## Key Features
@@ -55,9 +58,37 @@ Limits gives you one policy layer: define rules once, enforce them across your s
 
 ## How it works
 
-<img src="/images/overview-flow.png" alt="Limits: one policy layer for allow, block, escalate" />
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#F0F0F0', 'primaryTextColor':'#1a1a1a', 'primaryBorderColor':'#343434', 'lineColor':'#343434', 'secondaryColor':'#E5E5E5', 'tertiaryColor':'#FFFFFF', 'textColor':'#1a1a1a' }}}%%
+flowchart LR
+  subgraph stack["Your stack"]
+    API
+    SDK
+  end
 
-Requests from your stack (API, SDK, agents, webhooks, or manual triggers) hit the Limits policy layer. Limits evaluates each request against your policies and returns **allow**, **block**, or **escalate**—so the same rules apply everywhere.
+  Limits["Limits · Policy evaluation"]
+
+  subgraph outcomes["Outcomes"]
+    Allow
+    Block
+    Escalate
+  end
+
+  stack --> Limits --> outcomes
+
+  style Limits fill:#343434,stroke:#1a1a1a,color:#FFFFFF
+```
+
+Requests from your stack (API, SDK, agents, webhooks, scheduled jobs, or manual triggers) hit the Limits policy layer. Limits evaluates each request against your policies and returns **allow**, **block**, or **escalate**—so the same rules apply everywhere.
+
+### Platform journey
+
+1. **Define a policy** — In the Dashboard, open the **Assistant** (top right), choose the policy mode (Conditions, Instructions, or Guardrails), and describe what you want in natural language. The Assistant generates the policy.
+2. **View and refine** — You’re taken to the results area; the UI adapts to the policy mode. Edit via the Assistant or manually in the visual editor.
+3. **Test** — Generate test cases and simulate requests (by single policy or by tag). Simulation works for any policy; it’s for testing before you use the policy in your app.
+4. **Engine** — Every evaluation is run by the Limits engine and returns **allow**, **block**, or **escalate** (priority: Block > Escalate > Allow).
+5. **Use in your app** — When the policy is ready, call the **SDK** (`check()`, `evaluate()`, `guard()`). The SDK only enforces **active** policies; inactive ones are skipped. Handle the result in your code (`data.action`, `isAllowed`, `isBlocked`, `isEscalated`, `data.reason`)—see [SDK Policies](/sdk/policies#result-shape).
+6. **Observe** — All evaluations are **logged**. Escalated requests go to **Approvals**, where you approve or decline. You can configure **notifications** (allow/block/escalate) and, for escalations, **on_approve** and **on_decline** webhooks.
 
 ### You define policies, not just code
 
@@ -81,9 +112,7 @@ Every request is evaluated against your policies:
 
 Use the same policies everywhere. Create **API keys** in Limits, then call the Limits API or SDK from your app or backend—one source of truth and consistent behavior across your stack.
 
-### You stay in control
-
-- **Dashboard** — Active policies, pending approvals, and counts of approved/blocked requests.
+### You stay in control- **Dashboard** — Active policies, pending approvals, and counts of approved/blocked requests.
 - **Policies** — Create and edit policies (conditions and instructions); use the Assistant to generate from natural language and simulate before deploying.
 - **Logs** — Filter and search action logs for full auditability.
 - **Approvals** — Handle escalated requests in one place.
