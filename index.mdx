@@ -1,47 +1,52 @@
 ---
 title: "Introduction"
-description: "The AI Policy Layer for Agentic Ecosystems"
+description: "The AI Control Layer for Agentic Ecosystems"
+icon: "book-open"
 ---
 
 Limits intercepts every agentic action at the edge, centralizes and versions stateful policies, and replaces prompt-driven constraints with deterministic rules.
 
-<img src="/images/conditionsLayout.png" alt="Limits: AI policy layer" />
+> One control layer for agentic ecosystems: define rules, enforce allow/block/escalate, and keep full visibility.
+
+<img src="/images/conditionsLayout.png" alt="Limits: AI Control Layer" />
+
+## Getting started
 
 <CardGroup cols={2}>
-  <Card title="Overview" icon="compass" href="/quickstart">
-    How Limits works: policies, allow/block/escalate, and your stack.
+  <Card title="Overview" icon="compass" href="/quickstart" iconType="solid">
+    How Limits works: rules, allow/block/escalate, and your stack.
   </Card>
-  <Card title="Instructions vs Conditions" icon="lightbulb" href="/policies/instructions-vs-conditions">
-    Two ways to define a policy: structured conditions or natural-language instructions.
+  <Card title="Instructions vs Conditions" icon="lightbulb" href="/policies/instructions-vs-conditions" iconType="solid">
+    Two ways to define rules: structured conditions or natural-language instructions.
   </Card>
-  <Card title="Quickstart" icon="rocket" href="/quickstart">
+  <Card title="Quickstart" icon="rocket" href="/quickstart" iconType="solid">
     Get up and running in under 5 minutes.
   </Card>
-  <Card title="Platform Guide" icon="layout" href="/platform/getting-started">
+  <Card title="Platform Guide" icon="table-cells" href="/platform/getting-started" iconType="solid">
     Learn how to use the Limits platform.
   </Card>
-  <Card title="SDK Reference" icon="code" href="/sdk/installation">
-    Explore the SDK and start defining policies.
+  <Card title="SDK Reference" icon="code" href="/sdk/installation" iconType="solid">
+    Explore the SDK and define rules in your app.
   </Card>
-  <Card title="LangChain integration" icon="plug" href="/sdk/langchain">
+  <Card title="LangChain integration" icon="plug" href="/sdk/langchain" iconType="solid">
     Integrate with LangChain agents via custom middleware.
   </Card>
 </CardGroup>
 
-## Key Features
+## Key features
 
 <CardGroup cols={2}>
-  <Card title="Deterministic Policies" icon="shield-check">
+  <Card title="Deterministic rules" icon="shield-check" iconType="solid">
     Define rules that always execute the same way—no prompt ambiguity.
   </Card>
-  <Card title="Human Approval Workflows" icon="user-check">
+  <Card title="Human Approval Workflows" icon="user-check" iconType="solid">
     Require review (escalation) for sensitive agent actions.
   </Card>
-  <Card title="Audit Logs" icon="scroll">
-    Full visibility into every policy check and agent decision.
+  <Card title="Audit Logs" icon="scroll" iconType="solid">
+    Full visibility into every check and agent decision.
   </Card>
-  <Card title="Edge Interception" icon="bolt">
-    Sub-millisecond policy evaluation at the edge.
+  <Card title="Edge Interception" icon="bolt" iconType="solid">
+    Sub-millisecond evaluation at the edge.
   </Card>
 </CardGroup>
 ## Why Limits?
@@ -112,7 +117,9 @@ Every request is evaluated against your policies:
 
 Use the same policies everywhere. Create **API keys** in Limits, then call the Limits API or SDK from your app or backend—one source of truth and consistent behavior across your stack.
 
-### You stay in control- **Dashboard** — Active policies, pending approvals, and counts of approved/blocked requests.
+### You stay in control
+
+- **Dashboard** — Active policies, pending approvals, and counts of approved/blocked requests.
 - **Policies** — Create and edit policies (conditions and instructions); use the Assistant to generate from natural language and simulate before deploying.
 - **Logs** — Filter and search action logs for full auditability.
 - **Approvals** — Handle escalated requests in one place.
@@ -141,19 +148,19 @@ You control the logic: simple rules, conditional workflows, or complex multi-ste
 ## Next steps
 
 <CardGroup cols={2}>
-  <Card title="Instructions vs Conditions" icon="lightbulb" href="/policies/instructions-vs-conditions">
-    When to use Conditions mode vs Instructions mode for policies.
+  <Card title="Instructions vs Conditions" icon="lightbulb" href="/policies/instructions-vs-conditions" iconType="solid">
+    When to use Conditions mode vs Instructions mode.
   </Card>
-  <Card title="Quickstart" icon="rocket" href="/quickstart">
+  <Card title="Quickstart" icon="rocket" href="/quickstart" iconType="solid">
     Get up and running in under 5 minutes.
   </Card>
-  <Card title="Platform Guide" icon="layout" href="/platform/getting-started">
+  <Card title="Platform Guide" icon="table-cells" href="/platform/getting-started" iconType="solid">
     Dashboard, Policies, Logs, Approvals, API Keys.
   </Card>
-  <Card title="SDK Reference" icon="code" href="/sdk/installation">
-    Integrate policies in your app with the SDK.
+  <Card title="SDK Reference" icon="code" href="/sdk/installation" iconType="solid">
+    Integrate rules in your app with the SDK.
   </Card>
-  <Card title="API Reference" icon="square-terminal" href="/api-reference/introduction">
-    Call the API directly for policy evaluation and approvals.
+  <Card title="API Reference" icon="terminal" href="/api-reference/introduction" iconType="solid">
+    Call the API for evaluation and approvals.
   </Card>
 </CardGroup>

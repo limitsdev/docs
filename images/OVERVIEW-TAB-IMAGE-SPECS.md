@@ -65,7 +65,7 @@ Visual descriptions for each image so you (or a designer) can create or source t
 
 **Where it appears:** Introduction page (index.mdx), right after: *"Limits intercepts every agentic action at the edge, centralizes and versions stateful policies, and replaces prompt-driven constraints with deterministic rules."* — before the first CardGroup.
 
-**Purpose:** In one glance, show that Limits is the **AI policy layer**: it sits between your agents/app and the three outcomes (allow, block, escalate). Reinforce "edge," "policy layer," and "deterministic rules."
+**Purpose:** In one glance, show that Limits is the **AI Control Layer**: it sits between your agents/app and the three outcomes (allow, block, escalate). Reinforce "edge," "policy layer," and "deterministic rules."
 
 **How it should look:**
 

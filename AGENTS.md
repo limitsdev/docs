@@ -1,6 +1,6 @@
 # Limits Documentation — AI Assistant Context
 
-This documentation covers **Limits** (limits.dev), the AI policy layer for agentic ecosystems.
+This documentation covers **Limits** (limits.dev), the AI Control Layer for agentic ecosystems.
 
 ## What Limits does
 
